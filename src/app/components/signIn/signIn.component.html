@@ -1,0 +1,76 @@
+<div class="sign-in__wrapper">
+  <div class="sign-in__box">
+    <div class="sign-in__title">Sign up</div>
+    <div class="sign-in__text">
+      We value your privacy here, stay secure with our chat app.
+    </div>
+    <div class="sign-buttons">
+      <div class="sign-fb" (click)="fbSignUp()">
+        <fa-icon [icon]="fbIcon" class="fbIcon"></fa-icon>
+        <div class="sign-fb__text">Sign up with Facebook</div>
+      </div>
+      <div class="sign-google google-text">
+        <fa-icon [icon]="googleIcon" class="fbIcon"></fa-icon>
+        <div class="sign-google__text">Sign up with Google</div>
+      </div>
+    </div>
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-text">OR</div>
+    </div>
+    <div class="form-wrapper">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+        <div class="user-pic__upload" #pictureUpload>
+          <label for="picture" class="pic-label"></label>
+          <input
+            type="file"
+            id="picture"
+            hidden
+            (change)="onSelectImg($event)"
+          />
+        </div>
+        <div class="user-picture" #picture>
+          <img src="" alt="" class="user-img" #picSrc />
+          <button class="reset-btn" type="button" (click)="onReset()">
+            RESET
+          </button>
+        </div>
+        <div class="user-data">
+          <div class="each-input">
+            <label>
+              <input
+                type="text"
+                formControlName="name"
+                placeholder="Enter Your Name"
+                class="input-field"
+              />
+            </label>
+          </div>
+          <div class="each-input">
+            <label>
+              <input
+                type="text"
+                formControlName="email"
+                placeholder="Enter Your Email"
+                class="input-field"
+              />
+            </label>
+          </div>
+          <div class="each-input">
+            <label>
+              <input
+                type="password"
+                formControlName="password"
+                placeholder="Enter Your Password"
+                class="input-field"
+              />
+            </label>
+          </div>
+          <div class="submit-btn__wrapper">
+            <button class="submit-btn" type="submit">sign up</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
