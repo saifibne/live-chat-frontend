@@ -53,8 +53,20 @@
                 formControlName="email"
                 placeholder="Enter Your Email"
                 class="input-field"
+                (focus)="onFocus()"
               />
             </label>
+            <div class="warning-wrapper" *ngIf="emailExist">
+              <fa-icon
+                [icon]="infoIcon"
+                class="info-icon"
+                (click)="clickIcon()"
+              ></fa-icon>
+              <div class="warning-message__wrapper" #emailWarning>
+                <div class="angle-block"></div>
+                <div class="warning-message">{{ warningMessage }}</div>
+              </div>
+            </div>
           </div>
           <div class="each-input">
             <label>
@@ -63,8 +75,15 @@
                 formControlName="password"
                 placeholder="Enter Your Password"
                 class="input-field"
+                #passwordField
               />
             </label>
+            <div class="show-password">
+              <fa-icon
+                [icon]="eyeIcon"
+                (click)="onShowPassword(passwordField)"
+              ></fa-icon>
+            </div>
           </div>
           <div class="submit-btn__wrapper">
             <button class="submit-btn" type="submit">sign up</button>
