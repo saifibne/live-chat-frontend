@@ -5,11 +5,11 @@
       We value your privacy here, stay secure with our chat app.
     </div>
     <div class="sign-buttons">
-      <div class="sign-fb" (click)="fbSignUp()">
+      <div class="sign-fb" (click)="signInWithFacebook()">
         <fa-icon [icon]="fbIcon" class="fbIcon"></fa-icon>
         <div class="sign-fb__text">Sign up with Facebook</div>
       </div>
-      <div class="sign-google google-text">
+      <div class="sign-google google-text" (click)="signInWithGoogle()">
         <fa-icon [icon]="googleIcon" class="fbIcon"></fa-icon>
         <div class="sign-google__text">Sign up with Google</div>
       </div>
