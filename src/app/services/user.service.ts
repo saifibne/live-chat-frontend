@@ -12,7 +12,9 @@ export class UserService {
   );
   userDataSubject = new Subject<{
     notifications: [];
-    pendingRequests: [{ userId: { _id: string; name: string } }];
+    pendingRequests: [
+      { userId: { _id: string; name: string; pictureUrl: string } }
+    ];
   }>();
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -101,7 +103,9 @@ export class UserService {
             .get<{
               message: string;
               notifications: [];
-              pendingRequests: [{ userId: { _id: string; name: string } }];
+              pendingRequests: [
+                { userId: { _id: string; name: string; pictureUrl: string } }
+              ];
               code: number;
             }>('http://localhost:3000/user-data', {
               headers: new HttpHeaders({

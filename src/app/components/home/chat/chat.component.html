@@ -3,7 +3,7 @@
     <div class="heading">
       <div class="heading-text">{{ headingText }}</div>
       <div class="icon-groups">
-        <div class="user-request">
+        <div class="user-request" (click)="showFriendRequests()">
           <fa-icon [icon]="userInfoIcon" class="icons"></fa-icon>
           <div class="notification-counter" *ngIf="pendingRequest.length > 0">
             {{ pendingRequest.length }}
@@ -137,6 +137,37 @@
     </div>
   </div>
 </div>
+<div class="popup-wrapper" #friendRequestWrapper>
+  <div class="backdrop"></div>
+  <div class="search-popup" #friendRequestPanel>
+    <div class="search-header__wrapper">
+      <div class="search-header">Friend Requests</div>
+      <div class="close-btn" (click)="closeFriendRequests()">&#xD7;</div>
+    </div>
+    <div class="search-result">
+      <div class="no-result" *ngIf="pendingRequest.length === 0">
+        There is no new friend requests.
+      </div>
+      <div *ngIf="pendingRequest.length > 0">
+        <div class="each-result" *ngFor="let eachRequest of pendingRequest">
+          <div class="name-img__wrapper">
+            <div class="result-img">
+              <img [src]="eachRequest.userId.pictureUrl" alt="" />
+            </div>
+            <div class="result-name">
+              <span class="user-name">{{ eachRequest.userId.name }}</span> send
+              you a friend request.
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="each-action__button danger-button">Reject</button>
+            <button class="each-action__button">Accept</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="notification-message__wrapper" #notification>
   <fa-icon [icon]="crossIcon"></fa-icon>
   <div class="notification-message">Friend request already sent</div>
@@ -148,4 +179,3 @@
   <fa-icon [icon]="rightIcon"></fa-icon>
   <div class="notification-message">Successfully sent friend request</div>
 </div>
-<!--<button (click)="onClick()">click</button>-->

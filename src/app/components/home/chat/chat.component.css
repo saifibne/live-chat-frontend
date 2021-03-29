@@ -177,6 +177,7 @@
 }
 .search-popup {
   width: 50%;
+  max-width: 650px;
   background-color: white;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0.3rem;
@@ -307,4 +308,38 @@
   color: white;
   font-weight: 700;
   font-size: 8px;
+}
+.user-name {
+  color: #665dfe;
+  text-transform: capitalize;
+}
+.updated-each__result {
+  flex-direction: column;
+  align-items: flex-start;
+}
+.each-action__button {
+  padding: 7px 20px;
+  color: white;
+  background-color: #665dfe;
+  border: 1px solid #665dfe;
+  font-size: 14px;
+  line-height: 1.2;
+  border-radius: 4px;
+  margin: 0 6px;
+  cursor: pointer;
+  transition: all 200ms linear;
+}
+.each-action__button:hover {
+  background-color: #4436ff;
+  border-color: #4436ff;
+}
+.danger-button {
+  color: #ff337c;
+  border-color: #ff337c;
+  background-color: white;
+}
+.danger-button:hover {
+  background-color: #ff337c;
+  border-color: #ff337c;
+  color: white;
 }

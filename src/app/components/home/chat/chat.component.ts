@@ -38,7 +38,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   showDropDown = false;
   searchedUsers: SearchUser[] = [];
   notifications = [];
-  pendingRequest: { userId: { _id: string; name: string } }[] = [];
+  pendingRequest: {
+    userId: { _id: string; name: string; pictureUrl: string };
+  }[] = [];
   searchText = new Subject<string>();
   searchSubscriber!: Subscription;
   userSubject!: Subscription;
@@ -47,6 +49,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('dropDown') dropDown!: ElementRef;
   @ViewChild('notification') notification!: ElementRef;
   @ViewChild('successNotification') successNotification!: ElementRef;
+  @ViewChild('friendRequestWrapper') friendRequestWrapper!: ElementRef;
+  @ViewChild('friendRequestPanel') friendRequestPanel!: ElementRef;
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
@@ -108,6 +112,29 @@ export class ChatComponent implements OnInit, OnDestroy {
     );
     this.renderer.addClass(
       this.searchWrapper.nativeElement,
+      'show-search__popup'
+    );
+  }
+  showFriendRequests() {
+    this.renderer.setStyle(
+      this.friendRequestWrapper.nativeElement,
+      'visibility',
+      'visible'
+    );
+    this.renderer.addClass(
+      this.friendRequestPanel.nativeElement,
+      'show-search__popup'
+    );
+  }
+  closeFriendRequests() {
+    setTimeout(() => {
+      this.renderer.removeStyle(
+        this.friendRequestWrapper.nativeElement,
+        'visibility'
+      );
+    }, 200);
+    this.renderer.removeClass(
+      this.friendRequestPanel.nativeElement,
       'show-search__popup'
     );
   }
