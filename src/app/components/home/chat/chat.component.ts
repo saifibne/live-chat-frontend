@@ -12,6 +12,7 @@ import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { faTimesCircle } from '@fortawesome/free-regular-svg-icons';
 import { faCheckCircle } from '@fortawesome/free-regular-svg-icons';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
 import { of, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -29,12 +30,15 @@ export class ChatComponent implements OnInit, OnDestroy {
   userIcon = faUserPlus;
   crossIcon = faTimesCircle;
   rightIcon = faCheckCircle;
+  userInfoIcon = faUser;
   popSearchText: string = '';
   headingText!: string;
   showEmail!: boolean;
   showText!: boolean;
   showDropDown = false;
   searchedUsers: SearchUser[] = [];
+  notifications = [];
+  pendingRequest: { userId: { _id: string; name: string } }[] = [];
   searchText = new Subject<string>();
   searchSubscriber!: Subscription;
   userSubject!: Subscription;
@@ -63,7 +67,8 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
     });
     this.userSubject = this.userService.userDataSubject.subscribe((result) => {
-      console.log(result);
+      this.notifications = result.notifications;
+      this.pendingRequest = result.pendingRequests;
     });
     this.searchSubscriber = this.searchText
       .pipe(

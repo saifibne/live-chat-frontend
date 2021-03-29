@@ -3,8 +3,15 @@
     <div class="heading">
       <div class="heading-text">{{ headingText }}</div>
       <div class="icon-groups">
+        <div class="user-request">
+          <fa-icon [icon]="userInfoIcon" class="icons"></fa-icon>
+          <div class="notification-counter" *ngIf="pendingRequest.length > 0">
+            {{ pendingRequest.length }}
+          </div>
+        </div>
         <div class="notification">
           <fa-icon [icon]="bellIcon" class="icons"></fa-icon>
+          <div class="notification-counter">2</div>
         </div>
         <div class="options">
           <fa-icon
