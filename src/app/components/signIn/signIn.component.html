@@ -75,6 +75,7 @@
                 formControlName="password"
                 placeholder="Enter Your Password"
                 class="input-field"
+                (focus)="focusPassword()"
                 #passwordField
               />
             </label>
@@ -84,9 +85,48 @@
                 (click)="onShowPassword(passwordField)"
               ></fa-icon>
             </div>
+            <div
+              class="warning-wrapper"
+              *ngIf="
+                form.get('password')?.invalid && form.get('password')?.touched
+              "
+            >
+              <fa-icon
+                [icon]="infoIcon"
+                class="info-icon"
+                (click)="clickPasswordWarning()"
+              ></fa-icon>
+              <div class="warning-password__wrapper" #passwordWarning>
+                <div class="angle-block"></div>
+                <div class="warning-message">
+                  Password should be at least 8 characters long.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="each-input">
+            <label>
+              <input
+                type="password"
+                formControlName="confirmPassword"
+                placeholder="Confirm Password"
+                class="input-field"
+              />
+            </label>
+            <p
+              class="password-warning__msg"
+              *ngIf="
+                form.get('confirmPassword')?.invalid &&
+                form.get('confirmPassword')?.touched
+              "
+            >
+              Password does not match.
+            </p>
           </div>
           <div class="submit-btn__wrapper">
-            <button class="submit-btn" type="submit">sign up</button>
+            <button class="submit-btn" type="submit" [disabled]="!form.valid">
+              sign up
+            </button>
           </div>
         </div>
       </form>

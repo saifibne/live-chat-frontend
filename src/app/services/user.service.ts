@@ -1,11 +1,125 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { SearchUser } from '../model/user.model';
+import { BehaviorSubject, of, Subject } from 'rxjs';
+import { exhaustMap, switchMap, tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  constructor(private http: HttpClient) {}
+  userToken = new BehaviorSubject<{ message: string; token: string } | null>(
+    null
+  );
+  userDataSubject = new Subject<{
+    notifications: [];
+    pendingRequests: [{ userId: { _id: string; name: string } }];
+  }>();
+
+  constructor(private http: HttpClient, private router: Router) {}
 
   signUp(form: FormData) {
     return this.http.post('http://localhost:3000/sign-up', form);
+  }
+  logIn(email: string, password: string) {
+    return this.http
+      .post<{ message: string; token: string; code: number }>(
+        'http://localhost:3000/log-in',
+        {
+          email: email,
+          password: password,
+        }
+      )
+      .pipe(
+        tap((result) => {
+          if (result.message === 'successfully login') {
+            this.userToken.next(result);
+            localStorage.setItem('token', result.token);
+          }
+        })
+      );
+  }
+  autoLogin() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return this.userToken.next(null);
+    }
+    this.http
+      .get<{ message: string; token: string; code: number }>(
+        'http://localhost:3000/auto-login',
+        {
+          headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
+        }
+      )
+      .subscribe(
+        (result) => {
+          console.log(result);
+          if (result.code === 200) {
+            this.userToken.next(result);
+            localStorage.setItem('token', result.token);
+          } else {
+            this.userToken.next(null);
+            this.router.navigate(['/log-in']);
+          }
+        },
+        (error) => {
+          console.log(error);
+          localStorage.removeItem('token');
+          this.userToken.next(null);
+        }
+      );
+  }
+  searchUser(userName: string) {
+    return this.http.get<{ message: string; users: SearchUser[] }>(
+      `http://localhost:3000/search?user=${userName}`
+    );
+  }
+  sendFriendRequest(userId: string) {
+    return this.userToken.pipe(
+      exhaustMap((result) => {
+        if (result) {
+          return this.http.get<{
+            message: string;
+            token: string;
+            code: number;
+          }>('http://localhost:3000/add-user', {
+            params: new HttpParams().set('user', userId),
+            headers: new HttpHeaders({
+              Authorization: `Bearer ${result.token}`,
+            }),
+          });
+        } else {
+          return of(null);
+        }
+      })
+    );
+  }
+  userData() {
+    return this.userToken.pipe(
+      switchMap((result) => {
+        if (result) {
+          return this.http
+            .get<{
+              message: string;
+              notifications: [];
+              pendingRequests: [{ userId: { _id: string; name: string } }];
+              code: number;
+            }>('http://localhost:3000/user-data', {
+              headers: new HttpHeaders({
+                Authorization: `Bearer ${result.token}`,
+              }),
+            })
+            .pipe(
+              tap((result) => {
+                this.userDataSubject.next({
+                  notifications: result.notifications,
+                  pendingRequests: result.pendingRequests,
+                });
+              })
+            );
+        } else {
+          return of(null);
+        }
+      })
+    );
   }
 }

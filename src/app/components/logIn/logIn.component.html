@@ -1,0 +1,54 @@
+<div class="log-in__wrapper">
+  <div class="signUp-wrapper">
+    <div class="signUp-text">Don't have an account?</div>
+    <a class="signUp-link" routerLink="/sign-up">Sign up free!</a>
+  </div>
+  <div class="log-in__box">
+    <div class="logIn-heading">Sign In</div>
+    <div class="wrong-input" *ngIf="showError">Incorrect Email Or Password</div>
+    <form class="logIn-form" #form="ngForm" (ngSubmit)="onSignIn(form.value)">
+      <div class="logIn-email">
+        <label for="email">Email Address</label>
+        <input
+          type="text"
+          id="email"
+          class="each-input"
+          name="email"
+          email
+          required
+          #emailInput="ngModel"
+          ngModel
+        />
+        <div
+          class="warning-msg"
+          *ngIf="!emailInput.valid && emailInput.touched"
+        >
+          Email should be valid email address...
+        </div>
+      </div>
+      <div class="logIn-password">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          class="each-input"
+          #passwordInput
+          #pswdInput="ngModel"
+          required
+          name="password"
+          minlength="8"
+          ngModel
+        />
+        <div class="password-show__icon" (click)="clickShowPassword()"></div>
+        <div class="warning-msg" *ngIf="!pswdInput.valid && pswdInput.touched">
+          Password should be at least 8 characters long...
+        </div>
+      </div>
+      <div class="sign-btn__wrapper">
+        <button type="submit" class="sign-btn" [disabled]="!form.valid">
+          Sign In
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

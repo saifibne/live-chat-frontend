@@ -43,6 +43,7 @@ export class SignInComponent implements OnInit {
   warningMessage!: string | undefined;
   showWarning = false;
   showPassword = false;
+  showPasswordWarning = false;
   fbLogInOption = {
     fields: 'picture.type(large),name, email',
   };
@@ -50,6 +51,7 @@ export class SignInComponent implements OnInit {
   @ViewChild('picture') picture!: ElementRef;
   @ViewChild('picSrc') picSrc!: ElementRef;
   @ViewChild('emailWarning') emailWarning!: ElementRef;
+  @ViewChild('passwordWarning') passwordWarning!: ElementRef;
   constructor(
     private renderer: Renderer2,
     private authService: SocialAuthService,
@@ -64,7 +66,15 @@ export class SignInComponent implements OnInit {
         [Validators.required, Validators.email],
         this.validateEmail.bind(this)
       ),
-      password: new FormControl(null, Validators.required),
+      password: new FormControl(null, [
+        Validators.required,
+        Validators.minLength(8),
+        this.reCheckConfirmPassword.bind(this),
+      ]),
+      confirmPassword: new FormControl(null, [
+        Validators.required,
+        this.validateConfirmPassword.bind(this),
+      ]),
     });
     this.authService.authState.subscribe((user) => {
       this.user = user;
@@ -152,6 +162,29 @@ export class SignInComponent implements OnInit {
       return false;
     }
   }
+  clickPasswordWarning() {
+    this.showPasswordWarning = !this.showPasswordWarning;
+    if (this.showPasswordWarning) {
+      this.renderer.addClass(
+        this.passwordWarning.nativeElement,
+        'show-warning'
+      );
+    } else {
+      this.renderer.removeClass(
+        this.passwordWarning.nativeElement,
+        'show-warning'
+      );
+    }
+  }
+  focusPassword() {
+    this.showPasswordWarning = false;
+    if (this.passwordWarning) {
+      this.renderer.removeClass(
+        this.passwordWarning.nativeElement,
+        'show-warning'
+      );
+    }
+  }
   private updateDom(response: {
     name: string;
     email: string;
@@ -193,6 +226,30 @@ export class SignInComponent implements OnInit {
           }
         })
       );
+  }
+  private validateConfirmPassword(control: AbstractControl) {
+    if (this.form) {
+      if (this.form.get('password')?.value != control.value) {
+        return { confirmPassword: true };
+      }
+    }
+    return null;
+  }
+  private reCheckConfirmPassword(control: AbstractControl) {
+    if (this.form) {
+      if (
+        this.form.get('confirmPassword')?.value != control.value &&
+        this.form.get('confirmPassword')?.touched
+      ) {
+        this.form.get('confirmPassword')?.setErrors({ confirmPassword: true });
+      } else if (
+        this.form.get('confirmPassword')?.value == control.value &&
+        this.form.get('confirmPassword')?.touched
+      ) {
+        this.form.get('confirmPassword')?.setErrors(null);
+      }
+    }
+    return null;
   }
   clickIcon() {
     this.showWarning = !this.showWarning;

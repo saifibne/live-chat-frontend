@@ -1,0 +1,144 @@
+<div class="component-wrapper">
+  <div class="header-wrapper">
+    <div class="heading">
+      <div class="heading-text">{{ headingText }}</div>
+      <div class="icon-groups">
+        <div class="notification">
+          <fa-icon [icon]="bellIcon" class="icons"></fa-icon>
+        </div>
+        <div class="options">
+          <fa-icon
+            [icon]="optionIcon"
+            class="icons"
+            (click)="clickDropDown()"
+          ></fa-icon>
+          <div class="option-dropDown" #dropDown>
+            <ul class="option-list">
+              <li class="option-list__item" (click)="clickAddUser()">
+                Add User
+              </li>
+              <li class="option-list__item">Create Group</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="search-box">
+      <label for="search">
+        <input
+          type="text"
+          id="search"
+          class="search-input"
+          placeholder="Search Users ..."
+        />
+      </label>
+      <div class="search-btn">
+        <svg
+          class="hw-20"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          ></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <div class="chats-wrapper">
+    <div class="chats-container">
+      <div class="single-chat__box">
+        <div class="chat-img">
+          <img
+            src="https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=2885769288321011&height=200&width=200&ext=1619535706&hash=AeQAIK-QPhoDTpK-MVw"
+            alt=""
+          />
+        </div>
+        <div class="chat-texts">
+          <div class="chat-text__header">
+            <div class="chat-user__name">Catherine Richardson</div>
+            <div class="chat-user__time">10:20 pm</div>
+          </div>
+          <div class="chat-text__msg" *ngIf="showText">
+            I am sorry i couldn't catch that ...
+          </div>
+          <div class="chat-text__msg" *ngIf="showEmail" style="color: #adb5bd">
+            sahilaktar39@gmail.com
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="popup-wrapper" #popupWrapper>
+  <div class="backdrop"></div>
+  <div class="search-popup" #searchWrapper>
+    <div class="search-header__wrapper">
+      <div class="search-header">Search User</div>
+      <div class="close-btn" (click)="closeAddUser()">&#xD7;</div>
+    </div>
+    <div class="search-box search-popup__box">
+      <label for="searchPop">
+        <input
+          type="text"
+          id="searchPop"
+          class="search-input"
+          placeholder="Search Users ..."
+          [(ngModel)]="popSearchText"
+          (keyup)="onSearch()"
+        />
+      </label>
+      <div class="search-btn">
+        <svg
+          class="hw-20"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          ></path>
+        </svg>
+      </div>
+    </div>
+    <div class="search-result">
+      <div class="no-result" *ngIf="searchedUsers.length === 0">
+        Can't find any user, try different name..
+      </div>
+      <div class="each-result" *ngFor="let user of searchedUsers">
+        <div class="name-img__wrapper">
+          <div class="result-img">
+            <img [src]="user.pictureUrl" alt="" />
+          </div>
+          <div class="result-name">{{ user.name }}</div>
+        </div>
+        <div class="friend-request">
+          <fa-icon
+            [icon]="userIcon"
+            class="user-icon"
+            (click)="sendRequest(user._id)"
+          ></fa-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="notification-message__wrapper" #notification>
+  <fa-icon [icon]="crossIcon"></fa-icon>
+  <div class="notification-message">Friend request already sent</div>
+</div>
+<div
+  class="notification-message__wrapper success-notification"
+  #successNotification
+>
+  <fa-icon [icon]="rightIcon"></fa-icon>
+  <div class="notification-message">Successfully sent friend request</div>
+</div>
+<!--<button (click)="onClick()">click</button>-->
