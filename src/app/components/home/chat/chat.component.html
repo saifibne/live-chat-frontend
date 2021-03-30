@@ -11,7 +11,9 @@
         </div>
         <div class="notification">
           <fa-icon [icon]="bellIcon" class="icons"></fa-icon>
-          <div class="notification-counter">2</div>
+          <div class="notification-counter" *ngIf="notifications.length > 0">
+            {{ notifications.length }}
+          </div>
         </div>
         <div class="options">
           <fa-icon
@@ -160,8 +162,18 @@
             </div>
           </div>
           <div class="action-buttons">
-            <button class="each-action__button danger-button">Reject</button>
-            <button class="each-action__button">Accept</button>
+            <button
+              class="each-action__button danger-button"
+              (click)="clickReject(eachRequest.userId._id)"
+            >
+              Reject
+            </button>
+            <button
+              class="each-action__button"
+              (click)="clickAccept(eachRequest.userId._id)"
+            >
+              Accept
+            </button>
           </div>
         </div>
       </div>

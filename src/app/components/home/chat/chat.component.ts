@@ -37,7 +37,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   showText!: boolean;
   showDropDown = false;
   searchedUsers: SearchUser[] = [];
-  notifications = [];
+  notifications: { message: string }[] = [];
   pendingRequest: {
     userId: { _id: string; name: string; pictureUrl: string };
   }[] = [];
@@ -71,6 +71,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
     });
     this.userSubject = this.userService.userDataSubject.subscribe((result) => {
+      console.log(result);
       this.notifications = result.notifications;
       this.pendingRequest = result.pendingRequests;
     });
@@ -190,6 +191,16 @@ export class ChatComponent implements OnInit, OnDestroy {
           }, 2000);
         }
       }
+    });
+  }
+  clickAccept(userId: string) {
+    this.userService.acceptFriendRequest(userId).subscribe((result) => {
+      console.log(result);
+    });
+  }
+  clickReject(userId: string) {
+    this.userService.rejectFriendRequest(userId).subscribe((result) => {
+      console.log(result);
     });
   }
   ngOnDestroy() {

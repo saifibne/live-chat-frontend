@@ -11,7 +11,7 @@ export class UserService {
     null
   );
   userDataSubject = new Subject<{
-    notifications: [];
+    notifications: [{ message: string }];
     pendingRequests: [
       { userId: { _id: string; name: string; pictureUrl: string } }
     ];
@@ -102,7 +102,7 @@ export class UserService {
           return this.http
             .get<{
               message: string;
-              notifications: [];
+              notifications: [{ message: string }];
               pendingRequests: [
                 { userId: { _id: string; name: string; pictureUrl: string } }
               ];
@@ -120,6 +120,38 @@ export class UserService {
                 });
               })
             );
+        } else {
+          return of(null);
+        }
+      })
+    );
+  }
+  acceptFriendRequest(userId: string) {
+    return this.userToken.pipe(
+      exhaustMap((result) => {
+        if (result) {
+          return this.http.get('http://localhost:3000/accept-user-request', {
+            params: new HttpParams().set('userId', userId),
+            headers: new HttpHeaders({
+              Authorization: `Bearer ${result.token}`,
+            }),
+          });
+        } else {
+          return of(null);
+        }
+      })
+    );
+  }
+  rejectFriendRequest(userId: string) {
+    return this.userToken.pipe(
+      exhaustMap((result) => {
+        if (result) {
+          return this.http.get('http://localhost:3000/reject-request', {
+            params: new HttpParams().set('userId', userId),
+            headers: new HttpHeaders({
+              Authorization: `Bearer ${result.token}`,
+            }),
+          });
         } else {
           return of(null);
         }
