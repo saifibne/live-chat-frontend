@@ -18,6 +18,7 @@ import { of, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { UserService } from '../../../services/user.service';
 import { SearchUser } from '../../../model/user.model';
+import { ChatConnectionModel } from '../../../model/chat.model';
 
 @Component({
   selector: 'app-chat',
@@ -37,7 +38,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   showText!: boolean;
   showDropDown = false;
   searchedUsers: SearchUser[] = [];
-  notifications: { message: string }[] = [];
+  chatConnections: ChatConnectionModel[] = [];
+  notifications: { message: string; imageUrl: string }[] = [];
   pendingRequest: {
     userId: { _id: string; name: string; pictureUrl: string };
   }[] = [];
@@ -51,6 +53,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('successNotification') successNotification!: ElementRef;
   @ViewChild('friendRequestWrapper') friendRequestWrapper!: ElementRef;
   @ViewChild('friendRequestPanel') friendRequestPanel!: ElementRef;
+  @ViewChild('notificationWrapper') notificationWrapper!: ElementRef;
+  @ViewChild('notificationPanel') notificationPanel!: ElementRef;
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
@@ -68,6 +72,12 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.showEmail = false;
         this.showText = true;
         this.userService.userData().subscribe();
+        this.userService.chatConnections().subscribe((result) => {
+          if (result) {
+            this.chatConnections = result.chatConnections;
+            console.log(this.chatConnections);
+          }
+        });
       }
     });
     this.userSubject = this.userService.userDataSubject.subscribe((result) => {
@@ -202,6 +212,29 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.userService.rejectFriendRequest(userId).subscribe((result) => {
       console.log(result);
     });
+  }
+  openNotificationPanel() {
+    this.renderer.setStyle(
+      this.notificationWrapper.nativeElement,
+      'visibility',
+      'visible'
+    );
+    this.renderer.addClass(
+      this.notificationPanel.nativeElement,
+      'show-search__popup'
+    );
+  }
+  closeNotificationPanel() {
+    setTimeout(() => {
+      this.renderer.removeStyle(
+        this.notificationWrapper.nativeElement,
+        'visibility'
+      );
+    }, 200);
+    this.renderer.removeClass(
+      this.notificationPanel.nativeElement,
+      'show-search__popup'
+    );
   }
   ngOnDestroy() {
     this.searchSubscriber.unsubscribe();

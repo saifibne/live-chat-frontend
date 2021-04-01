@@ -4,6 +4,7 @@ import { SearchUser } from '../model/user.model';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { exhaustMap, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { ChatConnectionModel } from '../model/chat.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -11,7 +12,7 @@ export class UserService {
     null
   );
   userDataSubject = new Subject<{
-    notifications: [{ message: string }];
+    notifications: [{ message: string; imageUrl: string }];
     pendingRequests: [
       { userId: { _id: string; name: string; pictureUrl: string } }
     ];
@@ -102,7 +103,7 @@ export class UserService {
           return this.http
             .get<{
               message: string;
-              notifications: [{ message: string }];
+              notifications: [{ message: string; imageUrl: string }];
               pendingRequests: [
                 { userId: { _id: string; name: string; pictureUrl: string } }
               ];
@@ -148,6 +149,24 @@ export class UserService {
         if (result) {
           return this.http.get('http://localhost:3000/reject-request', {
             params: new HttpParams().set('userId', userId),
+            headers: new HttpHeaders({
+              Authorization: `Bearer ${result.token}`,
+            }),
+          });
+        } else {
+          return of(null);
+        }
+      })
+    );
+  }
+  chatConnections() {
+    return this.userToken.pipe(
+      exhaustMap((result) => {
+        if (result) {
+          return this.http.get<{
+            message: string;
+            chatConnections: ChatConnectionModel[];
+          }>('http://localhost:3000/get-chats', {
             headers: new HttpHeaders({
               Authorization: `Bearer ${result.token}`,
             }),

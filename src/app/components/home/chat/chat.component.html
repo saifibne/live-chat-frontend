@@ -9,7 +9,7 @@
             {{ pendingRequest.length }}
           </div>
         </div>
-        <div class="notification">
+        <div class="notification" (click)="openNotificationPanel()">
           <fa-icon [icon]="bellIcon" class="icons"></fa-icon>
           <div class="notification-counter" *ngIf="notifications.length > 0">
             {{ notifications.length }}
@@ -60,20 +60,24 @@
   </div>
   <div class="chats-wrapper">
     <div class="chats-container">
-      <div class="single-chat__box">
+      <div
+        class="single-chat__box"
+        *ngFor="let eachChatConnection of chatConnections"
+      >
         <div class="chat-img">
-          <img
-            src="https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=2885769288321011&height=200&width=200&ext=1619535706&hash=AeQAIK-QPhoDTpK-MVw"
-            alt=""
-          />
+          <img [src]="eachChatConnection.pictureUrl" alt="" />
         </div>
         <div class="chat-texts">
           <div class="chat-text__header">
-            <div class="chat-user__name">Catherine Richardson</div>
-            <div class="chat-user__time">10:20 pm</div>
+            <div class="chat-user__name">
+              {{ eachChatConnection.name | titlecase }}
+            </div>
+            <div class="chat-user__time">
+              {{ eachChatConnection.time | date: "shortTime" }}
+            </div>
           </div>
           <div class="chat-text__msg" *ngIf="showText">
-            I am sorry i couldn't catch that ...
+            {{ eachChatConnection.message }}
           </div>
           <div class="chat-text__msg" *ngIf="showEmail" style="color: #adb5bd">
             sahilaktar39@gmail.com
@@ -174,6 +178,32 @@
             >
               Accept
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="popup-wrapper" #notificationWrapper>
+  <div class="backdrop"></div>
+  <div class="search-popup" #notificationPanel>
+    <div class="search-header__wrapper">
+      <div class="search-header">Notifications</div>
+      <div class="close-btn" (click)="closeNotificationPanel()">&#xD7;</div>
+    </div>
+    <div class="search-result">
+      <div class="no-result" *ngIf="notifications.length === 0">
+        There is no new notifications.
+      </div>
+      <div *ngIf="notifications.length > 0">
+        <div class="each-result" *ngFor="let eachNotification of notifications">
+          <div class="name-img__wrapper">
+            <div class="result-img">
+              <img [src]="eachNotification.imageUrl" alt="" />
+            </div>
+            <div class="result-name">
+              {{ eachNotification.message }}
+            </div>
           </div>
         </div>
       </div>
