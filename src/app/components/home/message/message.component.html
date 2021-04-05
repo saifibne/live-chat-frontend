@@ -1,0 +1,67 @@
+<div class="total-wrapper">
+  <div class="message-header__wrapper" *ngIf="userDetails">
+    <div class="message-header-img">
+      <img [src]="userDetails.userId.pictureUrl" alt="" class="user-img" />
+    </div>
+    <div class="message-header__text">
+      <div class="message-header__name">
+        {{ userDetails.userId.name | titlecase }}
+      </div>
+      <div class="message-header__status">online</div>
+    </div>
+  </div>
+  <div class="messages-wrapper" #messageWrapper>
+    <div class="total-messages" #messageContainer>
+      <div
+        class="each-message"
+        *ngFor="let message of chats"
+        [ngClass]="{ 'no-owner__each-msg': !message.owner }"
+      >
+        <div
+          class="message-text"
+          [ngClass]="{ 'no-owner__msg-text': !message.owner }"
+        >
+          {{ message.text }}
+        </div>
+        <div
+          class="message-img__outer"
+          [ngClass]="{ 'no-owner__msg-img-outer': !message.owner }"
+        >
+          <div class="message-img">
+            <img [src]="message.userId.pictureUrl" alt="" />
+          </div>
+        </div>
+        <div
+          class="msg-time"
+          [ngClass]="{ 'no-owner__msg-time': !message.owner }"
+        >
+          {{ message.time | date: "shortTime" }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="message-send__wrapper">
+    <div class="message-send__input">
+      <label for="message">
+        <input
+          type="text"
+          id="message"
+          class="message-input"
+          placeholder="Write Your Message ..."
+          autocomplete="off"
+          #messageInput
+        />
+      </label>
+    </div>
+    <div class="message-send__btn" (click)="sendMessage(messageInput.value)">
+      <svg class="hw-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"
+        ></path>
+      </svg>
+    </div>
+  </div>
+</div>

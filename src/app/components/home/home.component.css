@@ -45,5 +45,5 @@
   color: white;
 }
 ::ng-deep router-outlet + * {
-  width: 30%;
+  width: 100%;
 }

@@ -1,5 +1,12 @@
-.component-wrapper {
+.total-wrapper {
+  display: flex;
+  width: 100%;
   height: 100vh;
+}
+.component-wrapper {
+  width: 30%;
+  flex-shrink: 0;
+  /*display: inline-block;*/
 }
 .header-wrapper {
   width: 100%;
@@ -120,6 +127,15 @@
   border: 1px solid #e5e9f2;
   border-radius: 4px;
   margin-bottom: 6px;
+  cursor: pointer;
+}
+.single-chat__box:focus {
+  outline: none;
+}
+.single-chat__box-active {
+  background-color: #665dfe;
+  border: 1px solid #665dfe;
+  color: white;
 }
 .chat-texts {
   /*width: 80%;*/
@@ -146,6 +162,11 @@
   font-weight: 500;
   line-height: 1.2;
 }
+.chat-user__name-active,
+.chat-user__time-active,
+.chat-text__msg-active {
+  color: white !important;
+}
 .chat-user__time {
   font-size: 14px;
   color: #adb5bd;
@@ -165,6 +186,7 @@
   align-items: center;
   justify-content: center;
   visibility: hidden;
+  z-index: 2;
   transition: visibility 0ms linear;
 }
 .backdrop {
@@ -348,4 +370,8 @@
   background-color: #ff337c;
   border-color: #ff337c;
   color: white;
+}
+::ng-deep router-outlet + * {
+  /*width: 70%;*/
+  /*display: inline-block;*/
 }

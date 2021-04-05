@@ -18,7 +18,8 @@ import { LogInComponent } from './components/logIn/logIn.component';
 import { RoutingModule } from './routing.module';
 import { HomeComponent } from './components/home/home.component';
 import { ChatComponent } from './components/home/chat/chat.component';
-import { FriendsComponent } from './components/home/friends/friends.component';
+import { MessageComponent } from './components/home/message/message.component';
+import { ShortTextPipe } from './pipes/shortText.pipe';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { FriendsComponent } from './components/home/friends/friends.component';
     LogInComponent,
     HomeComponent,
     ChatComponent,
-    FriendsComponent,
+    MessageComponent,
+    ShortTextPipe,
   ],
   imports: [
     BrowserModule,

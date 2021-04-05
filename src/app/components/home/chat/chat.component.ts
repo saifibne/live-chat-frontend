@@ -75,13 +75,13 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.userService.chatConnections().subscribe((result) => {
           if (result) {
             this.chatConnections = result.chatConnections;
-            console.log(this.chatConnections);
+            // console.log(this.chatConnections);
           }
         });
       }
     });
     this.userSubject = this.userService.userDataSubject.subscribe((result) => {
-      console.log(result);
+      // console.log(result);
       this.notifications = result.notifications;
       this.pendingRequest = result.pendingRequests;
     });

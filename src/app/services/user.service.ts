@@ -55,7 +55,7 @@ export class UserService {
       )
       .subscribe(
         (result) => {
-          console.log(result);
+          // console.log(result);
           if (result.code === 200) {
             this.userToken.next(result);
             localStorage.setItem('token', result.token);
@@ -166,7 +166,7 @@ export class UserService {
           return this.http.get<{
             message: string;
             chatConnections: ChatConnectionModel[];
-          }>('http://localhost:3000/get-chats', {
+          }>('http://localhost:3000/get-chat-channels', {
             headers: new HttpHeaders({
               Authorization: `Bearer ${result.token}`,
             }),
