@@ -8,9 +8,11 @@ import { ChatConnectionModel } from '../model/chat.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  userToken = new BehaviorSubject<{ message: string; token: string } | null>(
-    null
-  );
+  userToken = new BehaviorSubject<{
+    message: string;
+    token: string;
+    userId: string;
+  } | null>(null);
   userDataSubject = new Subject<{
     notifications: [{ message: string; imageUrl: string }];
     pendingRequests: [
@@ -25,7 +27,7 @@ export class UserService {
   }
   logIn(email: string, password: string) {
     return this.http
-      .post<{ message: string; token: string; code: number }>(
+      .post<{ message: string; token: string; code: number; userId: string }>(
         'http://localhost:3000/log-in',
         {
           email: email,
@@ -47,7 +49,7 @@ export class UserService {
       return this.userToken.next(null);
     }
     this.http
-      .get<{ message: string; token: string; code: number }>(
+      .get<{ message: string; token: string; code: number; userId: string }>(
         'http://localhost:3000/auto-login',
         {
           headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
