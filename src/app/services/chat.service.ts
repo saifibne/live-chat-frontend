@@ -24,12 +24,41 @@ export class ChatService {
               text: string;
               time: Date;
               userId: { _id: string; pictureUrl: string };
+              _id: string;
             }[];
+            pagination: boolean;
           }>('http://localhost:3000/get-chat', {
             headers: new HttpHeaders({
               Authorization: `Bearer ${result.token}`,
             }),
             params: new HttpParams().set('chatId', chatId),
+          });
+        } else {
+          return of(null);
+        }
+      })
+    );
+  }
+  getMoreChats(chatId: string, page: number) {
+    return this.userService.userToken.pipe(
+      exhaustMap((result) => {
+        if (result) {
+          return this.http.get<{
+            message: string;
+            chats: {
+              owner: boolean;
+              text: string;
+              time: Date;
+              userId: { _id: string; pictureUrl: string };
+              _id: string;
+            }[];
+          }>('http://localhost:3000/additional-chats', {
+            headers: new HttpHeaders({
+              Authorization: `Bearer ${result.token}`,
+            }),
+            params: new HttpParams()
+              .set('chatId', chatId)
+              .set('page', page.toString()),
           });
         } else {
           return of(null);
