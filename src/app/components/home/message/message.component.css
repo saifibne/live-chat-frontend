@@ -1,5 +1,6 @@
 .total-wrapper {
   height: 100vh;
+  position: relative;
 }
 .message-header__wrapper {
   display: flex;
@@ -136,6 +137,39 @@
 }
 .no-owner__msg-time {
   left: 30px;
+}
+.new-msg__notification-wrapper {
+  position: absolute;
+  width: 100%;
+  top: 80px;
+  left: 0;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 200ms linear;
+  z-index: 5;
+}
+.show-new_msg-notification__wrapper {
+  visibility: visible;
+  opacity: 1;
+}
+.new-msg__notification {
+  font-size: 13px;
+  color: white;
+  background-color: #25d366;
+  width: max-content;
+  margin: 0 auto;
+  padding: 4px 15px;
+  border-radius: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.plus-icon {
+  margin-right: 4px;
+  font-size: 12px;
+  font-weight: 400;
+}
+.reset-counter {
+  height: 10px;
 }
 .sk-circle {
   margin: 10px auto;

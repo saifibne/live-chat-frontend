@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { SearchUser } from '../model/user.model';
+import { SearchUser, UserInterface } from '../model/user.model';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { exhaustMap, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -74,8 +74,21 @@ export class UserService {
       );
   }
   searchUser(userName: string) {
-    return this.http.get<{ message: string; users: SearchUser[] }>(
-      `http://localhost:3000/search?user=${userName}`
+    return this.userToken.pipe(
+      exhaustMap((result) => {
+        if (result) {
+          return this.http.get<{ message: string; users: SearchUser[] }>(
+            `http://localhost:3000/search?user=${userName}`,
+            {
+              headers: new HttpHeaders({
+                Authorization: `Bearer ${result.token}`,
+              }),
+            }
+          );
+        } else {
+          return of(null);
+        }
+      })
     );
   }
   sendFriendRequest(userId: string) {
@@ -177,6 +190,40 @@ export class UserService {
           return of(null);
         }
       })
+    );
+  }
+  getFriendsList() {
+    return this.userToken.pipe(
+      exhaustMap((result) => {
+        if (result) {
+          return this.http.get<{
+            message: string;
+            friends: {
+              _id: string;
+              userId: {
+                _id: string;
+                name: string;
+                email: string;
+                pictureUrl: string;
+              };
+            }[];
+          }>('http://localhost:3000/friend-list', {
+            headers: new HttpHeaders({
+              Authorization: `Bearer ${result.token}`,
+            }),
+          });
+        } else {
+          return of(null);
+        }
+      })
+    );
+  }
+  getFriendDetails(userId: string) {
+    return this.http.get<{ message: string; userDetails: UserInterface }>(
+      'http://localhost:3000/user-details',
+      {
+        params: new HttpParams().set('friendId', userId),
+      }
     );
   }
 }

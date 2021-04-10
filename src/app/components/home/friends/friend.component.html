@@ -1,0 +1,92 @@
+<div class="total-wrapper">
+  <div *ngIf="user">
+    <div class="friend-1__wrapper">
+      <div class="friend-1__details">
+        <div class="friend-1__img-wrapper">
+          <img [src]="user.pictureUrl" alt="" class="friend-1__img" />
+        </div>
+        <div class="friend-1__name">{{ user.name | titlecase }}</div>
+        <div class="friend-1__button">
+          <button class="chat-btn">
+            <fa-icon [icon]="chatIcon" class="chat-icon"></fa-icon>
+          </button>
+          <button class="chat-btn call-btn">
+            <svg
+              class="hw-24"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="friend-2__wrapper">
+      <div class="friend-2__block">
+        <div>
+          <div class="title">Birthdate</div>
+          <div class="text">22/01/1996</div>
+        </div>
+        <div>
+          <fa-icon [icon]="calenderIcon" class="icon"></fa-icon>
+        </div>
+      </div>
+      <div class="friend-2__block">
+        <div>
+          <div class="title">Phone</div>
+          <div class="text">9600105437</div>
+        </div>
+        <div class="phone-div">
+          <svg
+            class="hw-20"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+            ></path>
+          </svg>
+        </div>
+      </div>
+      <div class="friend-2__block">
+        <div>
+          <div class="title">Email</div>
+          <div class="text">{{ user.email }}</div>
+        </div>
+        <div><fa-icon [icon]="emailIcon" class="icon"></fa-icon></div>
+      </div>
+      <div class="friend-2__block">
+        <div>
+          <div class="title">Address</div>
+          <div class="text">hyderpur,malda</div>
+        </div>
+        <div class="address-div">
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            class="hw-20"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            ></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -12,18 +12,23 @@ import { io } from 'socket.io-client';
 import { UserService } from '../../../services/user.service';
 import { mergeMap, take } from 'rxjs/operators';
 
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+
 @Component({
   selector: 'app-message',
   templateUrl: './message.component.html',
   styleUrls: ['./message.component.css'],
 })
 export class MessageComponent implements OnInit {
+  plusIcon = faPlus;
   groupId: string = '';
   socketEventName!: string;
   showLoadMore = false;
   prevScrollHeight!: number;
   page!: number;
+  notificationCounter!: number;
   observer!: IntersectionObserver;
+  resetCounterObserver!: IntersectionObserver;
   userDetails!: {
     _id: string;
     userId: { _id: string; name: string; pictureUrl: string };
@@ -41,6 +46,8 @@ export class MessageComponent implements OnInit {
   @ViewChild('messageWrapper', { static: true }) messageWrapper!: ElementRef;
   @ViewChild('messageInput') messageInput!: ElementRef;
   @ViewChild('loadMore', { static: true }) loadMore!: ElementRef;
+  @ViewChild('newMessageNotification') newMessageNotification!: ElementRef;
+  @ViewChild('resetCounter', { static: true }) resetCounter!: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -67,6 +74,7 @@ export class MessageComponent implements OnInit {
           if (this.observer) {
             this.observer.disconnect();
           }
+          this.setResetCounterObserver(this.resetCounter.nativeElement);
           if (!result.pagination) {
             this.renderer.setStyle(
               this.loadMore.nativeElement,
@@ -110,6 +118,21 @@ export class MessageComponent implements OnInit {
   scrollToBottom() {
     this.messageWrapper.nativeElement.scrollTop = this.messageWrapper.nativeElement.scrollHeight;
     this.runScrollToBottom = false;
+    this.notificationCounter = 0;
+  }
+  setResetCounterObserver(element: Element) {
+    if (this.resetCounterObserver) {
+      this.resetCounterObserver.disconnect();
+    }
+    this.resetCounterObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          this.notificationCounter = 0;
+        }
+      },
+      { threshold: [0.1] }
+    );
+    this.resetCounterObserver.observe(element);
   }
   sendMessage(message: string) {
     this.chatService.addMessage(message, this.groupId).subscribe((result) => {
@@ -143,6 +166,29 @@ export class MessageComponent implements OnInit {
           };
         }
         this.chats.push(newMessage);
+        if (result.userId !== data.userId) {
+          this.cd.detectChanges();
+          const calculateHeight =
+            this.messageWrapper.nativeElement.scrollHeight -
+            (this.messageWrapper.nativeElement.scrollTop +
+              this.messageWrapper.nativeElement.clientHeight);
+          console.log(calculateHeight);
+          if (calculateHeight > 200) {
+            this.notificationCounter += 1;
+            this.renderer.addClass(
+              this.newMessageNotification.nativeElement,
+              'show-new_msg-notification__wrapper'
+            );
+            setTimeout(() => {
+              this.renderer.removeClass(
+                this.newMessageNotification.nativeElement,
+                'show-new_msg-notification__wrapper'
+              );
+            }, 4000);
+          } else {
+            this.scrollToBottom();
+          }
+        }
         this.renderer.setProperty(this.messageInput.nativeElement, 'value', '');
       }
     });
@@ -189,5 +235,12 @@ export class MessageComponent implements OnInit {
     this.messageWrapper.nativeElement.scrollTop =
       this.messageWrapper.nativeElement.scrollHeight - this.prevScrollHeight;
     this.prevScrollHeight = this.messageWrapper.nativeElement.scrollHeight;
+  }
+  onClickNotification() {
+    this.renderer.removeClass(
+      this.newMessageNotification.nativeElement,
+      'show-new_msg-notification__wrapper'
+    );
+    this.scrollToBottom();
   }
 }

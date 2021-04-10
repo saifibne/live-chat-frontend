@@ -60,7 +60,7 @@
       </div>
     </div>
     <div class="chats-wrapper">
-      <div class="chats-container">
+      <div class="chats-container" *ngIf="chatConnections">
         <div
           class="single-chat__box"
           *ngFor="let eachChatConnection of chatConnections"
@@ -89,17 +89,36 @@
             </div>
             <div
               class="chat-text__msg"
-              *ngIf="showText"
               [class.chat-text__msg-active]="linkActive.isActive"
             >
               {{ eachChatConnection.message | shortText: 40 }}
             </div>
-            <div
-              class="chat-text__msg"
-              *ngIf="showEmail"
-              style="color: #adb5bd"
-            >
-              sahilaktar39@gmail.com
+          </div>
+        </div>
+      </div>
+      <div class="chats-container" *ngIf="friends">
+        <div
+          class="single-chat__box"
+          *ngFor="let eachFriend of friends"
+          routerLink="friend"
+          routerLinkActive="single-chat__box-active"
+          #linkActive="routerLinkActive"
+          [queryParams]="{ friendId: eachFriend.userId._id }"
+        >
+          <div class="chat-img">
+            <img [src]="eachFriend.userId.pictureUrl" alt="" />
+          </div>
+          <div class="chat-texts">
+            <div class="chat-text__header">
+              <div
+                class="chat-user__name"
+                [class.chat-user__name-active]="linkActive.isActive"
+              >
+                {{ eachFriend.userId.name | titlecase }}
+              </div>
+            </div>
+            <div class="chat-text__msg" style="color: #adb5bd">
+              {{ eachFriend.userId.email }}
             </div>
           </div>
         </div>
@@ -156,6 +175,12 @@
               [icon]="userIcon"
               class="user-icon"
               (click)="sendRequest(user._id)"
+              *ngIf="!user.alreadyFriend"
+            ></fa-icon>
+            <fa-icon
+              [icon]="correctIcon"
+              class="correct-icon"
+              *ngIf="user.alreadyFriend"
             ></fa-icon>
           </div>
         </div>

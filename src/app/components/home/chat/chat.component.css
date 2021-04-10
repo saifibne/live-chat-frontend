@@ -375,3 +375,8 @@
   /*width: 70%;*/
   /*display: inline-block;*/
 }
+.correct-icon {
+  font-size: 20px;
+  color: #25d366;
+  margin-right: 10px;
+}

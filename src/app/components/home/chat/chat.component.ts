@@ -13,11 +13,12 @@ import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { faTimesCircle } from '@fortawesome/free-regular-svg-icons';
 import { faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle as correctIcon } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
 import { of, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { UserService } from '../../../services/user.service';
-import { SearchUser } from '../../../model/user.model';
+import { FriendListInterface, SearchUser } from '../../../model/user.model';
 import { ChatConnectionModel } from '../../../model/chat.model';
 
 @Component({
@@ -31,6 +32,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   userIcon = faUserPlus;
   crossIcon = faTimesCircle;
   rightIcon = faCheckCircle;
+  correctIcon = correctIcon;
   userInfoIcon = faUser;
   popSearchText: string = '';
   headingText!: string;
@@ -39,6 +41,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   showDropDown = false;
   searchedUsers: SearchUser[] = [];
   chatConnections: ChatConnectionModel[] = [];
+  friends: FriendListInterface[] = [];
   notifications: { message: string; imageUrl: string }[] = [];
   pendingRequest: {
     userId: { _id: string; name: string; pictureUrl: string };
@@ -65,12 +68,17 @@ export class ChatComponent implements OnInit, OnDestroy {
       if (param['linkName'] === 'friends') {
         this.headingText = 'Friends';
         this.showEmail = true;
-        this.showText = false;
+        this.chatConnections = [];
         this.userService.userData().subscribe();
+        this.userService.getFriendsList().subscribe((result) => {
+          if (result) {
+            this.friends = result.friends;
+          }
+        });
       } else {
         this.headingText = 'chats';
         this.showEmail = false;
-        this.showText = true;
+        this.friends = [];
         this.userService.userData().subscribe();
         this.userService.chatConnections().subscribe((result) => {
           if (result) {
@@ -98,6 +106,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((result) => {
+        console.log(result);
         if (result) {
           this.searchedUsers = result.users;
         } else {

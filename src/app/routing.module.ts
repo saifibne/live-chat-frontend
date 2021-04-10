@@ -5,6 +5,7 @@ import { LogInComponent } from './components/logIn/logIn.component';
 import { HomeComponent } from './components/home/home.component';
 import { ChatComponent } from './components/home/chat/chat.component';
 import { MessageComponent } from './components/home/message/message.component';
+import { FriendComponent } from './components/home/friends/friend.component';
 
 const routes: Routes = [
   {
@@ -14,7 +15,10 @@ const routes: Routes = [
       {
         path: ':linkName',
         component: ChatComponent,
-        children: [{ path: 'chat', component: MessageComponent }],
+        children: [
+          { path: 'chat', component: MessageComponent },
+          { path: 'friend', component: FriendComponent },
+        ],
       },
     ],
   },

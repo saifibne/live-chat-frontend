@@ -1,4 +1,10 @@
 <div class="total-wrapper">
+  <div class="new-msg__notification-wrapper" #newMessageNotification>
+    <div class="new-msg__notification" (click)="onClickNotification()">
+      <span class="plus-icon"><fa-icon [icon]="plusIcon"></fa-icon></span
+      >{{ notificationCounter }} new message
+    </div>
+  </div>
   <div class="message-header__wrapper" *ngIf="userDetails">
     <div class="message-header-img">
       <img [src]="userDetails.userId.pictureUrl" alt="" class="user-img" />
@@ -54,6 +60,7 @@
           {{ message.time | date: "shortTime" }}
         </div>
       </div>
+      <div class="reset-counter" #resetCounter></div>
     </div>
   </div>
   <div class="message-send__wrapper">

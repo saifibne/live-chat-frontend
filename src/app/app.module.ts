@@ -20,6 +20,7 @@ import { HomeComponent } from './components/home/home.component';
 import { ChatComponent } from './components/home/chat/chat.component';
 import { MessageComponent } from './components/home/message/message.component';
 import { ShortTextPipe } from './pipes/shortText.pipe';
+import { FriendComponent } from './components/home/friends/friend.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { ShortTextPipe } from './pipes/shortText.pipe';
     LogInComponent,
     HomeComponent,
     ChatComponent,
+    FriendComponent,
     MessageComponent,
     ShortTextPipe,
   ],
