@@ -30,6 +30,7 @@ export class FriendComponent implements OnInit {
         })
       )
       .subscribe((result) => {
+        console.log(result);
         this.user = result.userDetails;
       });
   }

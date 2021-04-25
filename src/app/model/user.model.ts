@@ -16,6 +16,9 @@ export interface FriendListInterface {
 }
 export interface UserInterface {
   _id: string;
+  address: string;
+  phoneNo: string;
+  birthDate: string;
   name: string;
   email: string;
   pictureUrl: string;

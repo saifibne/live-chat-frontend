@@ -226,4 +226,43 @@ export class UserService {
       }
     );
   }
+  getOwnerDetails() {
+    return this.userToken.pipe(
+      exhaustMap((result) => {
+        if (result) {
+          return this.http.get<{ message: string; userDetails: UserInterface }>(
+            'http://localhost:3000/account-details',
+            {
+              headers: new HttpHeaders({
+                Authorization: `Bearer ${result.token}`,
+              }),
+            }
+          );
+        } else {
+          return of(null);
+        }
+      })
+    );
+  }
+  changeUserData(
+    userId: string,
+    firstName: string,
+    lastName: string,
+    phoneNo: number,
+    email: string,
+    address: string,
+    birthDate: Date
+  ) {
+    return this.http.post(
+      `http://localhost:3000/update-account-data/${userId}`,
+      {
+        firstName,
+        lastName,
+        phoneNo,
+        email,
+        address,
+        birthDate,
+      }
+    );
+  }
 }

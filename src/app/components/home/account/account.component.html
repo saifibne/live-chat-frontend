@@ -1,0 +1,153 @@
+<div class="account-wrapper" *ngIf="user">
+  <div class="partition-1">
+    <div class="partition-1__header">
+      <div class="partition-1__title">Profile</div>
+      <div class="partition-1__text">Personal Information & Settings</div>
+    </div>
+    <div class="partition-1__body">
+      <div class="account-info__card">
+        <div class="account-image__wrapper">
+          <img [src]="user.pictureUrl" alt="" class="account-img" />
+        </div>
+        <div class="account-name">{{ user.name | titlecase }}</div>
+        <div class="account-btn">
+          <div class="account-btn__icon">
+            <svg
+              class="hw-18 d-none d-sm-inline-block"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+              ></path>
+            </svg>
+          </div>
+          <div class="account-btn__text">Logout</div>
+        </div>
+      </div>
+      <div class="account-summary__card">
+        <div class="each-field">
+          <div class="title">Birthdate</div>
+          <div class="text">
+            {{
+              user.birthDate
+                ? (user.birthDate | date: "mediumDate")
+                : "Not Given"
+            }}
+          </div>
+        </div>
+        <div class="each-field">
+          <div class="title">Phone Number</div>
+          <div class="text">
+            {{ user.phoneNo ? user.phoneNo : "Not Given" }}
+          </div>
+        </div>
+        <div class="each-field">
+          <div class="title">Email</div>
+          <div class="text">{{ user.email }}</div>
+        </div>
+        <div class="each-field">
+          <div class="title">Address</div>
+          <div class="text">
+            {{ user.address ? user.address : "Not Given" }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="partition-2">
+    <div class="partition-2__header">
+      <div class="partition-1__title">Settings</div>
+      <div class="partition-1__text">
+        Update Personal Information & Settings
+      </div>
+    </div>
+    <div class="partition-2__body">
+      <div class="user-details__card">
+        <div class="user-detail__title">
+          <div class="user-detail__main">Account</div>
+          <div class="user-detail__second">
+            Update personal & contact information
+          </div>
+        </div>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="user-details__form">
+            <div class="bottom-margin">
+              <div class="row row-1">
+                <mat-form-field class="each-input">
+                  <mat-label>First Name</mat-label>
+                  <input
+                    type="text"
+                    matInput
+                    placeholder="first name.."
+                    formControlName="firstName"
+                  />
+                </mat-form-field>
+                <mat-form-field class="each-input">
+                  <mat-label>Last Name</mat-label>
+                  <input
+                    type="text"
+                    matInput
+                    placeholder="last name.."
+                    formControlName="lastName"
+                  />
+                </mat-form-field>
+              </div>
+              <div class="row row-2">
+                <mat-form-field class="each-input">
+                  <mat-label>Mobile Number</mat-label>
+                  <input
+                    type="text"
+                    matInput
+                    placeholder="mobile number.."
+                    formControlName="phoneNo"
+                  /> </mat-form-field
+                ><mat-form-field class="each-input">
+                  <mat-label>Birthdate</mat-label>
+                  <input
+                    type="text"
+                    matInput
+                    placeholder="birthdate.."
+                    [matDatepicker]="picker"
+                    formControlName="birthDate"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="picker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <mat-form-field class="big-input__div">
+                <mat-label>Email Address</mat-label>
+                <input
+                  type="email"
+                  matInput
+                  placeholder="email address ..."
+                  formControlName="email"
+                />
+              </mat-form-field>
+              <mat-form-field class="big-input__div">
+                <mat-label>Address</mat-label>
+                <input
+                  type="text"
+                  matInput
+                  placeholder="address ..."
+                  formControlName="address"
+                />
+              </mat-form-field>
+            </div>
+            <div class="submit-form">
+              <button class="submit-btn" type="submit">Save Changes</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="change-password__card"></div>
+    </div>
+  </div>
+</div>

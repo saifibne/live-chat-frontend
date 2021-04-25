@@ -21,6 +21,27 @@ import { ChatComponent } from './components/home/chat/chat.component';
 import { MessageComponent } from './components/home/message/message.component';
 import { ShortTextPipe } from './pipes/shortText.pipe';
 import { FriendComponent } from './components/home/friends/friend.component';
+import { AccountComponent } from './components/home/account/account.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
+import {
+  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+  MatMomentDateModule,
+} from '@angular/material-moment-adapter';
+
+const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 @NgModule({
   declarations: [
@@ -32,6 +53,7 @@ import { FriendComponent } from './components/home/friends/friend.component';
     FriendComponent,
     MessageComponent,
     ShortTextPipe,
+    AccountComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,6 +63,10 @@ import { FriendComponent } from './components/home/friends/friend.component';
     HttpClientModule,
     RoutingModule,
     FormsModule,
+    BrowserAnimationsModule,
+    MatInputModule,
+    MatMomentDateModule,
+    MatDatepickerModule,
   ],
   providers: [
     {
@@ -61,6 +87,11 @@ import { FriendComponent } from './components/home/friends/friend.component';
         ],
       } as SocialAuthServiceConfig,
     },
+    {
+      provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+      useValue: { userStrict: true },
+    },
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
   ],
   bootstrap: [AppComponent],
 })

@@ -32,7 +32,7 @@
       <div class="friend-2__block">
         <div>
           <div class="title">Birthdate</div>
-          <div class="text">22/01/1996</div>
+          <div class="text">{{ user.birthDate }}</div>
         </div>
         <div>
           <fa-icon [icon]="calenderIcon" class="icon"></fa-icon>
@@ -41,7 +41,7 @@
       <div class="friend-2__block">
         <div>
           <div class="title">Phone</div>
-          <div class="text">9600105437</div>
+          <div class="text">{{ user.phoneNo }}</div>
         </div>
         <div class="phone-div">
           <svg
@@ -69,7 +69,7 @@
       <div class="friend-2__block">
         <div>
           <div class="title">Address</div>
-          <div class="text">hyderpur,malda</div>
+          <div class="text">{{ user.address }}</div>
         </div>
         <div class="address-div">
           <svg
