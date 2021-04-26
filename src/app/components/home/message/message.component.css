@@ -35,6 +35,7 @@
   height: calc(100% - 75px - 73px);
   overflow: auto;
   overscroll-behavior: contain;
+  scrollbar-width: none;
 }
 ::-webkit-scrollbar {
   display: none;

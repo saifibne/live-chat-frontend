@@ -1,4 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 import { UserService } from '../../../services/user.service';
 import { UserInterface } from '../../../model/user.model';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -12,7 +18,10 @@ import * as moment from 'moment';
 export class AccountComponent implements OnInit {
   user!: UserInterface;
   form!: FormGroup;
-  constructor(private userService: UserService) {}
+  showPasswordError = false;
+  @ViewChild('errorPassword') errorPassword!: ElementRef;
+  @ViewChild('successPassword') successPassword!: ElementRef;
+  constructor(private userService: UserService, private renderer: Renderer2) {}
   ngOnInit() {
     this.userService.getOwnerDetails().subscribe((result) => {
       if (result) {
@@ -66,6 +75,51 @@ export class AccountComponent implements OnInit {
       )
       .subscribe((result) => {
         console.log(result);
+      });
+  }
+  onChangePassword(
+    password: string,
+    newPassword: string,
+    confirmPassword: string
+  ) {
+    this.showPasswordError = false;
+    if (!password || !newPassword || !confirmPassword) {
+      return;
+    }
+    if (newPassword.length < 8 || newPassword !== confirmPassword) {
+      this.showPasswordError = true;
+      return;
+    }
+    this.userService
+      .changePassword(password, newPassword)
+      .subscribe((result) => {
+        if (result) {
+          switch (result.code) {
+            case 400:
+              this.renderer.addClass(
+                this.errorPassword.nativeElement,
+                'show-error'
+              );
+              setTimeout(() => {
+                this.renderer.removeClass(
+                  this.errorPassword.nativeElement,
+                  'show-error'
+                );
+              }, 2000);
+              break;
+            case 200:
+              this.renderer.addClass(
+                this.successPassword.nativeElement,
+                'show-error'
+              );
+              setTimeout(() => {
+                this.renderer.removeClass(
+                  this.successPassword.nativeElement,
+                  'show-error'
+                );
+              }, 2000);
+          }
+        }
       });
   }
 }

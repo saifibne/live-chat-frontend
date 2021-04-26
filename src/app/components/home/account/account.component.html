@@ -60,6 +60,10 @@
     </div>
   </div>
   <div class="partition-2">
+    <div class="change-error" #errorPassword>Password does not match</div>
+    <div class="change-success" #successPassword>
+      Password changes successfully
+    </div>
     <div class="partition-2__header">
       <div class="partition-1__title">Settings</div>
       <div class="partition-1__text">
@@ -147,7 +151,64 @@
           </div>
         </form>
       </div>
-      <div class="change-password__card"></div>
+      <div class="change-password__card">
+        <div class="user-detail__title">
+          <div class="user-detail__main">Password</div>
+          <div class="user-detail__second">
+            Update personal & contact information
+          </div>
+        </div>
+        <div class="change-password__form">
+          <mat-form-field class="each-input">
+            <mat-label>Current Password</mat-label>
+            <input
+              type="password"
+              matInput
+              placeholder="current password..."
+              #password
+            />
+          </mat-form-field>
+          <div class="new-password">
+            <mat-form-field class="each-input">
+              <mat-label>New Password</mat-label>
+              <input
+                type="password"
+                matInput
+                placeholder="new password..."
+                #newPassword
+              />
+            </mat-form-field>
+            <mat-form-field class="each-input">
+              <mat-label>Confirm Password</mat-label>
+              <input
+                type="password"
+                matInput
+                placeholder="confirm password..."
+                #confirmPassword
+              />
+            </mat-form-field>
+          </div>
+          <div class="password-error" *ngIf="showPasswordError">
+            Password should be 8 characters long and new password should match
+            confirm password
+          </div>
+        </div>
+        <div class="submit-form">
+          <button
+            class="submit-btn"
+            type="button"
+            (click)="
+              onChangePassword(
+                password.value,
+                newPassword.value,
+                confirmPassword.value
+              )
+            "
+          >
+            Save Changes
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -265,4 +265,26 @@ export class UserService {
       }
     );
   }
+  changePassword(password: string, newPassword: string) {
+    return this.userToken.pipe(
+      exhaustMap((result) => {
+        if (result) {
+          return this.http.post<{ message: string; code: number }>(
+            'http://localhost:3000/change-password',
+            {
+              password: password,
+              newPassword: newPassword,
+            },
+            {
+              headers: new HttpHeaders({
+                Authorization: `Bearer ${result.token}`,
+              }),
+            }
+          );
+        } else {
+          return of(null);
+        }
+      })
+    );
+  }
 }
