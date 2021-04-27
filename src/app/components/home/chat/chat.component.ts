@@ -37,7 +37,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   popSearchText: string = '';
   headingText!: string;
   showEmail!: boolean;
-  showText!: boolean;
+  searchArrayText = '';
   showDropDown = false;
   searchedUsers: SearchUser[] = [];
   chatConnections: ChatConnectionModel[] = [];

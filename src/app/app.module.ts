@@ -30,6 +30,7 @@ import {
   MAT_MOMENT_DATE_ADAPTER_OPTIONS,
   MatMomentDateModule,
 } from '@angular/material-moment-adapter';
+import { ArrayFilterPipe } from './pipes/arrayFilter.pipe';
 
 const MY_DATE_FORMATS = {
   parse: {
@@ -54,6 +55,7 @@ const MY_DATE_FORMATS = {
     MessageComponent,
     ShortTextPipe,
     AccountComponent,
+    ArrayFilterPipe,
   ],
   imports: [
     BrowserModule,

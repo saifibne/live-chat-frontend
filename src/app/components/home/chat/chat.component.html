@@ -40,6 +40,7 @@
             id="search"
             class="search-input"
             placeholder="Search Users ..."
+            [(ngModel)]="searchArrayText"
           />
         </label>
         <div class="search-btn">
@@ -60,65 +61,70 @@
       </div>
     </div>
     <div class="chats-wrapper">
-      <div class="chats-container" *ngIf="chatConnections">
-        <div
-          class="single-chat__box"
-          *ngFor="let eachChatConnection of chatConnections"
-          routerLink="chat"
-          routerLinkActive="single-chat__box-active"
-          #linkActive="routerLinkActive"
-          [queryParams]="{ chatId: eachChatConnection._id }"
-        >
-          <div class="chat-img">
-            <img [src]="eachChatConnection.pictureUrl" alt="" />
-          </div>
-          <div class="chat-texts">
-            <div class="chat-text__header">
-              <div
-                class="chat-user__name"
-                [class.chat-user__name-active]="linkActive.isActive"
-              >
-                {{ eachChatConnection.name | titlecase }}
-              </div>
-              <div
-                class="chat-user__time"
-                [class.chat-user__time-active]="linkActive.isActive"
-              >
-                {{ eachChatConnection.time | date: "shortTime" }}
-              </div>
+      <div class="inner-padding">
+        <div class="chats-container" *ngIf="chatConnections">
+          <div
+            class="single-chat__box"
+            *ngFor="
+              let eachChatConnection of chatConnections
+                | searchArray: searchArrayText
+            "
+            routerLink="chat"
+            routerLinkActive="single-chat__box-active"
+            #linkActive="routerLinkActive"
+            [queryParams]="{ chatId: eachChatConnection._id }"
+          >
+            <div class="chat-img">
+              <img [src]="eachChatConnection.pictureUrl" alt="" />
             </div>
-            <div
-              class="chat-text__msg"
-              [class.chat-text__msg-active]="linkActive.isActive"
-            >
-              {{ eachChatConnection.message | shortText: 40 }}
+            <div class="chat-texts">
+              <div class="chat-text__header">
+                <div
+                  class="chat-user__name"
+                  [class.chat-user__name-active]="linkActive.isActive"
+                >
+                  {{ eachChatConnection.name | titlecase }}
+                </div>
+                <div
+                  class="chat-user__time"
+                  [class.chat-user__time-active]="linkActive.isActive"
+                >
+                  {{ eachChatConnection.time | date: "shortTime" }}
+                </div>
+              </div>
+              <div
+                class="chat-text__msg"
+                [class.chat-text__msg-active]="linkActive.isActive"
+              >
+                {{ eachChatConnection.message | shortText: 40 }}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="chats-container" *ngIf="friends">
-        <div
-          class="single-chat__box"
-          *ngFor="let eachFriend of friends"
-          routerLink="friend"
-          routerLinkActive="single-chat__box-active"
-          #linkActive="routerLinkActive"
-          [queryParams]="{ friendId: eachFriend.userId._id }"
-        >
-          <div class="chat-img">
-            <img [src]="eachFriend.userId.pictureUrl" alt="" />
-          </div>
-          <div class="chat-texts">
-            <div class="chat-text__header">
-              <div
-                class="chat-user__name"
-                [class.chat-user__name-active]="linkActive.isActive"
-              >
-                {{ eachFriend.userId.name | titlecase }}
-              </div>
+        <div class="friends-container" *ngIf="friends">
+          <div
+            class="single-chat__box"
+            *ngFor="let eachFriend of friends"
+            routerLink="friend"
+            routerLinkActive="single-chat__box-active"
+            #linkActive="routerLinkActive"
+            [queryParams]="{ friendId: eachFriend.userId._id }"
+          >
+            <div class="chat-img">
+              <img [src]="eachFriend.userId.pictureUrl" alt="" />
             </div>
-            <div class="chat-text__msg" style="color: #adb5bd">
-              {{ eachFriend.userId.email }}
+            <div class="chat-texts">
+              <div class="chat-text__header">
+                <div
+                  class="chat-user__name"
+                  [class.chat-user__name-active]="linkActive.isActive"
+                >
+                  {{ eachFriend.userId.name | titlecase }}
+                </div>
+              </div>
+              <div class="chat-text__msg" style="color: #adb5bd">
+                {{ eachFriend.userId.email }}
+              </div>
             </div>
           </div>
         </div>
