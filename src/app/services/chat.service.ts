@@ -1,13 +1,21 @@
 import { Injectable } from '@angular/core';
 import { exhaustMap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatService {
+  latestChatConnection = new Subject<{
+    message: string;
+    _id: string;
+    name: string;
+    pictureUrl: string;
+    time: Date;
+  }>();
+  showEmptySpace = new Subject<boolean>();
   constructor(private userService: UserService, private http: HttpClient) {}
   getChat(chatId: string) {
     return this.userService.userToken.pipe(
@@ -80,6 +88,31 @@ export class ChatService {
               }),
             }
           );
+        } else {
+          return of(null);
+        }
+      })
+    );
+  }
+  getParticularChatConnection(friendId: string) {
+    return this.userService.userToken.pipe(
+      exhaustMap((result) => {
+        if (result) {
+          return this.http.get<{
+            message: string;
+            chatConnection: {
+              _id: string;
+              message: string;
+              name: string;
+              pictureUrl: string;
+              time: Date;
+            };
+          }>('http://localhost:3000/single-chat-connection', {
+            headers: new HttpHeaders({
+              Authorization: `Bearer ${result.token}`,
+            }),
+            params: new HttpParams().set('friendId', friendId),
+          });
         } else {
           return of(null);
         }

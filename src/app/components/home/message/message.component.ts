@@ -6,11 +6,11 @@ import {
   Renderer2,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ChatService } from '../../../services/chat.service';
 import { io } from 'socket.io-client';
 import { UserService } from '../../../services/user.service';
-import { mergeMap, take } from 'rxjs/operators';
+import { delay, switchMap, take } from 'rxjs/operators';
 
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -25,14 +25,17 @@ export class MessageComponent implements OnInit {
   socketEventName!: string;
   showLoadMore = false;
   prevScrollHeight!: number;
+  showLoadingChats!: boolean;
   page!: number;
   notificationCounter!: number;
   observer!: IntersectionObserver;
   resetCounterObserver!: IntersectionObserver;
-  userDetails!: {
-    _id: string;
-    userId: { _id: string; name: string; pictureUrl: string };
-  };
+  userDetails!:
+    | {
+        _id: string;
+        userId: { _id: string; name: string; pictureUrl: string };
+      }
+    | undefined;
   chats: {
     owner: boolean;
     text: string;
@@ -51,6 +54,7 @@ export class MessageComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private chatService: ChatService,
     private userService: UserService,
     private renderer: Renderer2,
@@ -59,62 +63,90 @@ export class MessageComponent implements OnInit {
 
   ngOnInit() {
     const socket = io('http://localhost:3000');
+    this.chatService.showEmptySpace.next(false);
     this.route.queryParams
       .pipe(
-        mergeMap((result: Params) => {
+        switchMap((result: Params) => {
           this.groupId = result['chatId'];
-          return this.chatService.getChat(result.chatId);
-        })
-      )
-      .subscribe((result) => {
-        if (result) {
-          this.page = 1;
-          this.userDetails = result.user;
-          this.chats = result.chats;
-          if (this.observer) {
-            this.observer.disconnect();
-          }
-          this.setResetCounterObserver(this.resetCounter.nativeElement);
-          if (!result.pagination) {
-            this.renderer.setStyle(
-              this.loadMore.nativeElement,
-              'display',
-              'none'
-            );
-          } else {
-            this.renderer.removeStyle(this.loadMore.nativeElement, 'display');
-            this.observer = new IntersectionObserver(
-              (entries) => {
-                if (entries[0].isIntersecting) {
-                  this.getMoreChats();
-                }
-              },
-              { threshold: [1] }
-            );
-            this.observer.observe(this.loadMore.nativeElement);
-          }
-          this.cd.detectChanges();
-          this.scrollToBottom();
-          this.prevScrollHeight = this.messageWrapper.nativeElement.scrollHeight;
-          socket.off(this.socketEventName);
-          this.socketEventName = this.groupId;
-          socket.on(
-            this.groupId,
-            (socketData: {
-              connection: string;
-              data: {
-                text: string;
-                userId: string;
-                pictureUrl: string;
-                time: Date;
-              };
-            }) => {
-              this.handleSocketChatData(socketData.data);
-            }
+          this.showLoadingChats = true;
+          this.chats = [];
+          this.userDetails = undefined;
+          this.renderer.setStyle(
+            this.loadMore.nativeElement,
+            'visibility',
+            'hidden'
           );
+          return this.chatService.getChat(result.chatId);
+        }),
+        delay(10000)
+      )
+      .subscribe(
+        (result) => {
+          if (result) {
+            this.showLoadingChats = false;
+            this.page = 1;
+            this.userDetails = result.user;
+            this.chats = result.chats;
+            if (this.observer) {
+              this.observer.disconnect();
+            }
+            this.setResetCounterObserver(this.resetCounter.nativeElement);
+            if (!result.pagination) {
+              this.renderer.setStyle(
+                this.loadMore.nativeElement,
+                'visibility',
+                'hidden'
+              );
+              this.renderer.setStyle(this.loadMore.nativeElement, 'height', 0);
+            } else {
+              // this.renderer.removeStyle(this.loadMore.nativeElement, 'display');
+              this.renderer.setStyle(
+                this.loadMore.nativeElement,
+                'visibility',
+                'visible'
+              );
+              this.renderer.setStyle(
+                this.loadMore.nativeElement,
+                'height',
+                'auto'
+              );
+              this.observer = new IntersectionObserver(
+                (entries) => {
+                  if (entries[0].isIntersecting) {
+                    this.getMoreChats();
+                  }
+                },
+                { threshold: [1] }
+              );
+              this.observer.observe(this.loadMore.nativeElement);
+            }
+            this.cd.detectChanges();
+            this.scrollToBottom();
+            this.prevScrollHeight = this.messageWrapper.nativeElement.scrollHeight;
+            socket.off(this.socketEventName);
+            this.socketEventName = this.groupId;
+            socket.on(
+              this.groupId,
+              (socketData: {
+                connection: string;
+                data: {
+                  text: string;
+                  userId: string;
+                  pictureUrl: string;
+                  time: Date;
+                };
+              }) => {
+                this.handleSocketChatData(socketData.data);
+              }
+            );
+          }
+        },
+        () => {
+          return this.router.navigate(['/log-in']);
         }
-      });
+      );
   }
+
   scrollToBottom() {
     this.messageWrapper.nativeElement.scrollTop = this.messageWrapper.nativeElement.scrollHeight;
     this.runScrollToBottom = false;
@@ -135,11 +167,17 @@ export class MessageComponent implements OnInit {
     this.resetCounterObserver.observe(element);
   }
   sendMessage(message: string) {
-    this.chatService.addMessage(message, this.groupId).subscribe((result) => {
-      if (result) {
-        this.scrollToBottom();
+    this.chatService.addMessage(message, this.groupId).subscribe(
+      (result) => {
+        console.log(result);
+        if (result) {
+          this.scrollToBottom();
+        }
+      },
+      () => {
+        return this.router.navigate(['/log-in']);
       }
-    });
+    );
   }
   private handleSocketChatData(data: {
     text: string;
@@ -194,14 +232,17 @@ export class MessageComponent implements OnInit {
     });
   }
   getMoreChats() {
-    this.chatService
-      .getMoreChats(this.groupId, this.page)
-      .subscribe((result) => {
+    this.chatService.getMoreChats(this.groupId, this.page).subscribe(
+      (result) => {
         if (result) {
           this.pushToChats(result.chats);
         }
         this.page += 1;
-      });
+      },
+      () => {
+        return this.router.navigate(['/log-in']);
+      }
+    );
   }
 
   pushToChats(
@@ -218,7 +259,12 @@ export class MessageComponent implements OnInit {
         return singleChat._id === eachChat._id;
       });
       if (findChat) {
-        this.renderer.setStyle(this.loadMore.nativeElement, 'display', 'none');
+        this.renderer.setStyle(
+          this.loadMore.nativeElement,
+          'visibility',
+          'hidden'
+        );
+        this.renderer.setStyle(this.loadMore.nativeElement, 'height', 0);
         this.observer.disconnect();
         break;
       }

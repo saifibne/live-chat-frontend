@@ -7,7 +7,7 @@
         </div>
         <div class="friend-1__name">{{ user.name | titlecase }}</div>
         <div class="friend-1__button">
-          <button class="chat-btn">
+          <button class="chat-btn" (click)="getChatConnection(user._id)">
             <fa-icon [icon]="chatIcon" class="chat-icon"></fa-icon>
           </button>
           <button class="chat-btn call-btn">

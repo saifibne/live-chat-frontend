@@ -1,4 +1,6 @@
 import {
+  AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   OnDestroy,
@@ -14,19 +16,25 @@ import { faTimesCircle } from '@fortawesome/free-regular-svg-icons';
 import { faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { faCheckCircle as correctIcon } from '@fortawesome/free-solid-svg-icons';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of, Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import {
+  debounceTime,
+  delay,
+  distinctUntilChanged,
+  switchMap,
+} from 'rxjs/operators';
 import { UserService } from '../../../services/user.service';
 import { FriendListInterface, SearchUser } from '../../../model/user.model';
 import { ChatConnectionModel } from '../../../model/chat.model';
+import { ChatService } from '../../../services/chat.service';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
 })
-export class ChatComponent implements OnInit, OnDestroy {
+export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   bellIcon = faBell;
   optionIcon = faEllipsisV;
   userIcon = faUserPlus;
@@ -39,8 +47,15 @@ export class ChatComponent implements OnInit, OnDestroy {
   showEmail!: boolean;
   searchArrayText = '';
   showDropDown = false;
+  showEmptySpace!: boolean;
+  params!: string;
+  arr = Array;
+  loadingContainerNumber!: number;
+  showLoadingChats!: boolean;
+  userDetails!: { name: string; pictureUrl: string };
   searchedUsers: SearchUser[] = [];
   chatConnections: ChatConnectionModel[] = [];
+  existingConnection: ChatConnectionModel | undefined;
   friends: FriendListInterface[] = [];
   notifications: { message: string; imageUrl: string }[] = [];
   pendingRequest: {
@@ -49,6 +64,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   searchText = new Subject<string>();
   searchSubscriber!: Subscription;
   userSubject!: Subscription;
+  chatConnectionSubscription!: Subscription;
   @ViewChild('popupWrapper') popupWrapper!: ElementRef;
   @ViewChild('searchWrapper') searchWrapper!: ElementRef;
   @ViewChild('dropDown') dropDown!: ElementRef;
@@ -58,40 +74,100 @@ export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('friendRequestPanel') friendRequestPanel!: ElementRef;
   @ViewChild('notificationWrapper') notificationWrapper!: ElementRef;
   @ViewChild('notificationPanel') notificationPanel!: ElementRef;
+  @ViewChild('chatsWrapper') chatsWrapper!: ElementRef;
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private chatService: ChatService,
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {}
   ngOnInit() {
+    this.chatService.showEmptySpace.subscribe((result) => {
+      this.showEmptySpace = result;
+      this.cd.detectChanges();
+    });
     this.route.params.subscribe((param) => {
+      this.existingConnection = undefined;
+      this.showEmptySpace = true;
       if (param['linkName'] === 'friends') {
+        this.params = 'friends';
+        if (this.chatConnectionSubscription) {
+          this.chatConnectionSubscription.unsubscribe();
+        }
         this.headingText = 'Friends';
         this.showEmail = true;
         this.chatConnections = [];
-        this.userService.userData().subscribe();
-        this.userService.getFriendsList().subscribe((result) => {
-          if (result) {
-            this.friends = result.friends;
+        this.getUserData();
+        this.userService.getFriendsList().subscribe(
+          (result) => {
+            if (result) {
+              this.friends = result.friends;
+            }
+          },
+          () => {
+            return this.router.navigate(['/log-in']);
           }
-        });
+        );
       } else {
+        this.params = 'chats';
+        this.chatConnectionSubscription = this.chatService.latestChatConnection.subscribe(
+          (result) => {
+            this.existingConnection = result;
+          },
+          () => {
+            return this.router.navigate(['/log-in']);
+          }
+        );
         this.headingText = 'chats';
         this.showEmail = false;
         this.friends = [];
-        this.userService.userData().subscribe();
-        this.userService.chatConnections().subscribe((result) => {
-          if (result) {
-            this.chatConnections = result.chatConnections;
-            // console.log(this.chatConnections);
-          }
-        });
+        this.getUserData();
+        this.showLoadingChats = true;
+        this.userService
+          .chatConnections()
+          .pipe(delay(10000))
+          .subscribe(
+            (result) => {
+              if (result) {
+                this.showLoadingChats = false;
+                if (this.existingConnection) {
+                  const existingConnectionIndex = result.chatConnections.findIndex(
+                    (eachConnection) => {
+                      return (
+                        eachConnection._id === this.existingConnection?._id
+                      );
+                    }
+                  );
+                  if (existingConnectionIndex !== -1) {
+                    const newChatConnections = [...result.chatConnections];
+                    newChatConnections.splice(existingConnectionIndex, 1);
+                    this.chatConnections = [
+                      this.existingConnection,
+                      ...newChatConnections,
+                    ];
+                  } else {
+                    this.chatConnections = [
+                      this.existingConnection,
+                      ...result.chatConnections,
+                    ];
+                  }
+                } else {
+                  this.chatConnections = result.chatConnections;
+                }
+              }
+            },
+            () => {
+              return this.router.navigate(['/log-in']);
+            }
+          );
       }
     });
     this.userSubject = this.userService.userDataSubject.subscribe((result) => {
-      // console.log(result);
       this.notifications = result.notifications;
       this.pendingRequest = result.pendingRequests;
+      this.userDetails = { name: result.name, pictureUrl: result.pictureUrl };
     });
     this.searchSubscriber = this.searchText
       .pipe(
@@ -113,6 +189,21 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.searchedUsers = [];
         }
       });
+  }
+  ngAfterViewInit() {
+    const chatsWrapperHeight =
+      this.chatsWrapper.nativeElement.clientHeight - 20;
+    this.loadingContainerNumber = Math.floor(chatsWrapperHeight / 88);
+    this.cd.detectChanges();
+  }
+
+  private getUserData() {
+    this.userService.userData().subscribe(
+      () => {},
+      () => {
+        return this.router.navigate(['/log-in']);
+      }
+    );
   }
   onSearch() {
     this.searchText.next(this.popSearchText);
@@ -213,14 +304,24 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
   clickAccept(userId: string) {
-    this.userService.acceptFriendRequest(userId).subscribe((result) => {
-      console.log(result);
-    });
+    this.userService.acceptFriendRequest(userId).subscribe(
+      (result) => {
+        console.log(result);
+      },
+      () => {
+        return this.router.navigate(['/log-in']);
+      }
+    );
   }
   clickReject(userId: string) {
-    this.userService.rejectFriendRequest(userId).subscribe((result) => {
-      console.log(result);
-    });
+    this.userService.rejectFriendRequest(userId).subscribe(
+      (result) => {
+        console.log(result);
+      },
+      () => {
+        return this.router.navigate(['/log-in']);
+      }
+    );
   }
   openNotificationPanel() {
     this.renderer.setStyle(
@@ -245,8 +346,25 @@ export class ChatComponent implements OnInit, OnDestroy {
       'show-search__popup'
     );
   }
+  clearNotifications() {
+    this.userService.clearNotifications().subscribe(
+      () => {
+        this.closeNotificationPanel();
+        this.getUserData();
+      },
+      () => {
+        return this.router.navigate(['/log-in']);
+      }
+    );
+  }
+  // onClickLink() {
+  //   // this.showEmptySpace = false;
+  // }
   ngOnDestroy() {
     this.searchSubscriber.unsubscribe();
     this.userSubject.unsubscribe();
+    if (this.chatConnectionSubscription) {
+      this.chatConnectionSubscription.unsubscribe();
+    }
   }
 }

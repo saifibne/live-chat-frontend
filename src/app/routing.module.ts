@@ -7,8 +7,11 @@ import { ChatComponent } from './components/home/chat/chat.component';
 import { MessageComponent } from './components/home/message/message.component';
 import { FriendComponent } from './components/home/friends/friend.component';
 import { AccountComponent } from './components/home/account/account.component';
+import { LoadingComponent } from './components/loading/loading.component';
 
 const routes: Routes = [
+  { path: '', redirectTo: 'home/chats', pathMatch: 'full' },
+  { path: 'loading', component: LoadingComponent },
   {
     path: 'home',
     component: HomeComponent,

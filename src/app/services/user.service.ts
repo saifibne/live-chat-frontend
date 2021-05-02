@@ -14,6 +14,8 @@ export class UserService {
     userId: string;
   } | null>(null);
   userDataSubject = new Subject<{
+    name: string;
+    pictureUrl: string;
     notifications: [{ message: string; imageUrl: string }];
     pendingRequests: [
       { userId: { _id: string; name: string; pictureUrl: string } }
@@ -46,6 +48,7 @@ export class UserService {
   autoLogin() {
     const token = localStorage.getItem('token');
     if (!token) {
+      this.router.navigate(['/log-in']);
       return this.userToken.next(null);
     }
     this.http
@@ -57,7 +60,7 @@ export class UserService {
       )
       .subscribe(
         (result) => {
-          // console.log(result);
+          console.log(result);
           if (result.code === 200) {
             this.userToken.next(result);
             localStorage.setItem('token', result.token);
@@ -66,10 +69,10 @@ export class UserService {
             this.router.navigate(['/log-in']);
           }
         },
-        (error) => {
-          console.log(error);
+        () => {
           localStorage.removeItem('token');
           this.userToken.next(null);
+          return this.router.navigate(['/log-in']);
         }
       );
   }
@@ -118,6 +121,8 @@ export class UserService {
           return this.http
             .get<{
               message: string;
+              name: string;
+              pictureUrl: string;
               notifications: [{ message: string; imageUrl: string }];
               pendingRequests: [
                 { userId: { _id: string; name: string; pictureUrl: string } }
@@ -131,6 +136,8 @@ export class UserService {
             .pipe(
               tap((result) => {
                 this.userDataSubject.next({
+                  name: result.name,
+                  pictureUrl: result.pictureUrl,
                   notifications: result.notifications,
                   pendingRequests: result.pendingRequests,
                 });
@@ -281,6 +288,21 @@ export class UserService {
               }),
             }
           );
+        } else {
+          return of(null);
+        }
+      })
+    );
+  }
+  clearNotifications() {
+    return this.userToken.pipe(
+      exhaustMap((result) => {
+        if (result) {
+          return this.http.get('http://localhost:3000/clear-notifications', {
+            headers: new HttpHeaders({
+              Authorization: `Bearer ${result.token}`,
+            }),
+          });
         } else {
           return of(null);
         }

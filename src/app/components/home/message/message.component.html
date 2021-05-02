@@ -1,4 +1,9 @@
 <div class="total-wrapper">
+  <div class="message-loading__wrapper" *ngIf="showLoadingChats">
+    <div class="message-loading__inner-wrapper">
+      <app-loading></app-loading>
+    </div>
+  </div>
   <div class="new-msg__notification-wrapper" #newMessageNotification>
     <div class="new-msg__notification" (click)="onClickNotification()">
       <span class="plus-icon"><fa-icon [icon]="plusIcon"></fa-icon></span
@@ -63,7 +68,7 @@
       <div class="reset-counter" #resetCounter></div>
     </div>
   </div>
-  <div class="message-send__wrapper">
+  <div class="message-send__wrapper" *ngIf="userDetails">
     <div class="message-send__input">
       <label for="message">
         <input

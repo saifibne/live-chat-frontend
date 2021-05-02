@@ -35,7 +35,6 @@ export class LogInComponent {
   onSignIn(form: { email: string; password: string }) {
     this.showError = false;
     this.userService.logIn(form.email, form.password).subscribe((result) => {
-      console.log(result);
       switch (result.code) {
         case 201:
           this.showError = true;
@@ -46,7 +45,6 @@ export class LogInComponent {
         case 200:
           this.showError = false;
           this.router.navigate(['/home/chats']);
-          console.log(result);
       }
     });
   }

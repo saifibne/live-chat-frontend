@@ -233,12 +233,35 @@
 }
 .search-result {
   width: 100%;
-  min-height: 400px;
+  height: 450px;
   background-color: white;
   border-top: 1px solid #e5e9f2;
+  overflow: auto;
+  scrollbar-width: none;
+  /*position: relative;*/
   /*display: flex;*/
   /*justify-content: center;*/
   /*align-items: center;*/
+}
+.search-result::-webkit-scrollbar {
+  display: none;
+}
+.clear-btn__wrapper {
+  width: 100%;
+  border-top: 1px solid #e5e9f2;
+}
+.clear-btn {
+  /*position: fixed;*/
+  /*left: 0;*/
+  /*bottom: 0;*/
+  /*width: 100%;*/
+  text-align: center;
+  width: max-content;
+  margin: 0 auto;
+  padding: 10px;
+  background-color: white;
+  color: #ff337c;
+  cursor: pointer;
 }
 .close-btn {
   position: absolute;
@@ -383,4 +406,101 @@
   font-size: 20px;
   color: #25d366;
   margin-right: 10px;
+}
+.empty-space__wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.user-info__wrapper {
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.user-info__name {
+  font-size: 1.09375rem;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+  color: #495057;
+}
+.user-info__img {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 16px;
+}
+.user-info__img > img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+.user-info__message {
+  color: #adb5bd;
+  font-size: 0.875rem;
+}
+.single-chat__loading {
+  padding: 16px;
+  border: 1px solid #e5e9f2;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  overflow: hidden;
+}
+.chat-loading__img {
+  height: 48px;
+  width: 48px;
+  border-radius: 50%;
+  background-color: #e2e2e2;
+}
+.chat-loading__texts {
+  margin-left: 14px;
+  width: calc(100% - 48px - 14px);
+}
+.chat-loading-text2 {
+  width: 100%;
+  height: 16px;
+  background-color: #e2e2e2;
+}
+.chat-loading-text1 {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.chat-loading__name {
+  height: 16px;
+  width: 60%;
+  background-color: #e2e2e2;
+}
+.chat-loading__time {
+  height: 16px;
+  width: 30%;
+  background-color: #e2e2e2;
+}
+.loading {
+  position: relative;
+}
+.loading::after {
+  display: block;
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 100%;
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: loading 1s infinite;
+}
+@keyframes loading {
+  100% {
+    left: calc(100% - 20px);
+  }
 }

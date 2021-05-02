@@ -60,8 +60,25 @@
         </div>
       </div>
     </div>
-    <div class="chats-wrapper">
+    <div class="chats-wrapper" #chatsWrapper>
       <div class="inner-padding">
+        <div class="chats-loading__container" *ngIf="showLoadingChats">
+          <div
+            class="single-chat__loading"
+            *ngFor="
+              let counter of [].constructor(loadingContainerNumber).fill(1)
+            "
+          >
+            <div class="chat-loading__img loading"></div>
+            <div class="chat-loading__texts">
+              <div class="chat-loading-text1">
+                <div class="chat-loading__name loading"></div>
+                <div class="chat-loading__time loading"></div>
+              </div>
+              <div class="chat-loading-text2 loading"></div>
+            </div>
+          </div>
+        </div>
         <div class="chats-container" *ngIf="chatConnections">
           <div
             class="single-chat__box"
@@ -70,9 +87,9 @@
                 | searchArray: searchArrayText
             "
             routerLink="chat"
+            [queryParams]="{ chatId: eachChatConnection._id }"
             routerLinkActive="single-chat__box-active"
             #linkActive="routerLinkActive"
-            [queryParams]="{ chatId: eachChatConnection._id }"
           >
             <div class="chat-img">
               <img [src]="eachChatConnection.pictureUrl" alt="" />
@@ -261,6 +278,9 @@
           </div>
         </div>
       </div>
+      <div class="clear-btn__wrapper" *ngIf="notifications.length > 0">
+        <div class="clear-btn" (click)="clearNotifications()">Clear all</div>
+      </div>
     </div>
   </div>
   <div class="notification-message__wrapper" #notification>
@@ -273,6 +293,21 @@
   >
     <fa-icon [icon]="rightIcon"></fa-icon>
     <div class="notification-message">Successfully sent friend request</div>
+  </div>
+  <div class="empty-space__wrapper" *ngIf="showEmptySpace">
+    <div class="user-info__wrapper" *ngIf="userDetails">
+      <div class="user-info__img">
+        <img [src]="userDetails.pictureUrl" alt="" />
+      </div>
+      <div class="user-info__name">Welcome, {{ userDetails.name }}!</div>
+      <div class="user-info__message">
+        {{
+          params === "friends"
+            ? "Please select a friend to see details."
+            : "Please select a chat to start conversation."
+        }}
+      </div>
+    </div>
   </div>
   <router-outlet></router-outlet>
 </div>
