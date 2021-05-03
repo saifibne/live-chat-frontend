@@ -15,6 +15,13 @@ export class ChatService {
     pictureUrl: string;
     time: Date;
   }>();
+  currentChatConnection = new Subject<{
+    message: string;
+    _id: string;
+    name: string;
+    pictureUrl: string;
+    time: Date;
+  }>();
   showEmptySpace = new Subject<boolean>();
   constructor(private userService: UserService, private http: HttpClient) {}
   getChat(chatId: string) {

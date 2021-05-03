@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   Renderer2,
   ViewChild,
@@ -10,16 +11,18 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ChatService } from '../../../services/chat.service';
 import { io } from 'socket.io-client';
 import { UserService } from '../../../services/user.service';
-import { delay, switchMap, take } from 'rxjs/operators';
+import { delay, exhaustMap, switchMap, take } from 'rxjs/operators';
 
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-message',
   templateUrl: './message.component.html',
   styleUrls: ['./message.component.css'],
 })
-export class MessageComponent implements OnInit {
+export class MessageComponent implements OnInit, OnDestroy {
   plusIcon = faPlus;
   groupId: string = '';
   socketEventName!: string;
@@ -58,7 +61,8 @@ export class MessageComponent implements OnInit {
     private chatService: ChatService,
     private userService: UserService,
     private renderer: Renderer2,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -78,7 +82,7 @@ export class MessageComponent implements OnInit {
           );
           return this.chatService.getChat(result.chatId);
         }),
-        delay(10000)
+        delay(5000)
       )
       .subscribe(
         (result) => {
@@ -86,6 +90,7 @@ export class MessageComponent implements OnInit {
             this.showLoadingChats = false;
             this.page = 1;
             this.userDetails = result.user;
+            this.currentChatConnection(this.userDetails.userId._id);
             this.chats = result.chats;
             if (this.observer) {
               this.observer.disconnect();
@@ -99,7 +104,6 @@ export class MessageComponent implements OnInit {
               );
               this.renderer.setStyle(this.loadMore.nativeElement, 'height', 0);
             } else {
-              // this.renderer.removeStyle(this.loadMore.nativeElement, 'display');
               this.renderer.setStyle(
                 this.loadMore.nativeElement,
                 'visibility',
@@ -146,7 +150,37 @@ export class MessageComponent implements OnInit {
         }
       );
   }
-
+  private currentChatConnection(friendId: string) {
+    this.userService.userToken
+      .pipe(
+        exhaustMap((result) => {
+          if (result) {
+            return this.http.get<{
+              message: string;
+              chatConnection: {
+                _id: string;
+                message: string;
+                name: string;
+                pictureUrl: string;
+                time: Date;
+              };
+            }>('http://localhost:3000/single-chat-connection', {
+              headers: new HttpHeaders({
+                Authorization: `Bearer ${result.token}`,
+              }),
+              params: new HttpParams().set('friendId', friendId),
+            });
+          } else {
+            return of(null);
+          }
+        })
+      )
+      .subscribe((result) => {
+        if (result) {
+          this.chatService.currentChatConnection.next(result.chatConnection);
+        }
+      });
+  }
   scrollToBottom() {
     this.messageWrapper.nativeElement.scrollTop = this.messageWrapper.nativeElement.scrollHeight;
     this.runScrollToBottom = false;
@@ -288,5 +322,8 @@ export class MessageComponent implements OnInit {
       'show-new_msg-notification__wrapper'
     );
     this.scrollToBottom();
+  }
+  ngOnDestroy() {
+    this.chatService.showEmptySpace.next(true);
   }
 }

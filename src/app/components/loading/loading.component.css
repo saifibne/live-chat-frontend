@@ -1,11 +1,6 @@
 .loading {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  margin: -35px 0 0 -56px;
   width: 112px;
   height: 70px;
-  *zoom: 1;
 }
 .loading:before,
 .loading:after {

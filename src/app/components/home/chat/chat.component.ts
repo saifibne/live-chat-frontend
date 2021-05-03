@@ -56,6 +56,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   searchedUsers: SearchUser[] = [];
   chatConnections: ChatConnectionModel[] = [];
   existingConnection: ChatConnectionModel | undefined;
+  particularConnection: ChatConnectionModel | undefined;
   friends: FriendListInterface[] = [];
   notifications: { message: string; imageUrl: string }[] = [];
   pendingRequest: {
@@ -65,6 +66,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   searchSubscriber!: Subscription;
   userSubject!: Subscription;
   chatConnectionSubscription!: Subscription;
+  latestChatConnectionSubscription!: Subscription;
   @ViewChild('popupWrapper') popupWrapper!: ElementRef;
   @ViewChild('searchWrapper') searchWrapper!: ElementRef;
   @ViewChild('dropDown') dropDown!: ElementRef;
@@ -88,82 +90,88 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showEmptySpace = result;
       this.cd.detectChanges();
     });
-    this.route.params.subscribe((param) => {
-      this.existingConnection = undefined;
-      this.showEmptySpace = true;
-      if (param['linkName'] === 'friends') {
-        this.params = 'friends';
-        if (this.chatConnectionSubscription) {
-          this.chatConnectionSubscription.unsubscribe();
-        }
-        this.headingText = 'Friends';
-        this.showEmail = true;
-        this.chatConnections = [];
-        this.getUserData();
-        this.userService.getFriendsList().subscribe(
-          (result) => {
-            if (result) {
+    this.route.params
+      .pipe(
+        switchMap((params) => {
+          this.existingConnection = undefined;
+          this.particularConnection = undefined;
+          this.showEmptySpace = true;
+          if (params['linkName'] === 'friends') {
+            this.params = 'friends';
+            if (this.chatConnectionSubscription) {
+              this.chatConnectionSubscription.unsubscribe();
+            }
+            this.headingText = 'Friends';
+            this.showEmail = true;
+            this.chatConnections = [];
+            this.getUserData();
+            this.showLoadingChats = true;
+            return this.userService.getFriendsList();
+          } else {
+            this.params = 'chats';
+            this.latestChatConnection();
+            this.currentConnection();
+            this.headingText = 'chats';
+            this.showEmail = false;
+            this.friends = [];
+            this.getUserData();
+            this.showLoadingChats = true;
+            return this.userService.chatConnections();
+          }
+        })
+      )
+      .subscribe(
+        (result: any) => {
+          if (result) {
+            if (+result.code === 1223) {
+              this.showLoadingChats = false;
               this.friends = result.friends;
-            }
-          },
-          () => {
-            return this.router.navigate(['/log-in']);
-          }
-        );
-      } else {
-        this.params = 'chats';
-        this.chatConnectionSubscription = this.chatService.latestChatConnection.subscribe(
-          (result) => {
-            this.existingConnection = result;
-          },
-          () => {
-            return this.router.navigate(['/log-in']);
-          }
-        );
-        this.headingText = 'chats';
-        this.showEmail = false;
-        this.friends = [];
-        this.getUserData();
-        this.showLoadingChats = true;
-        this.userService
-          .chatConnections()
-          .pipe(delay(10000))
-          .subscribe(
-            (result) => {
-              if (result) {
-                this.showLoadingChats = false;
-                if (this.existingConnection) {
-                  const existingConnectionIndex = result.chatConnections.findIndex(
-                    (eachConnection) => {
-                      return (
-                        eachConnection._id === this.existingConnection?._id
-                      );
-                    }
-                  );
-                  if (existingConnectionIndex !== -1) {
-                    const newChatConnections = [...result.chatConnections];
-                    newChatConnections.splice(existingConnectionIndex, 1);
-                    this.chatConnections = [
-                      this.existingConnection,
-                      ...newChatConnections,
-                    ];
-                  } else {
-                    this.chatConnections = [
-                      this.existingConnection,
-                      ...result.chatConnections,
-                    ];
+            } else if (+result.code === 1224) {
+              this.showLoadingChats = false;
+              if (this.existingConnection) {
+                const existingConnectionIndex = result.chatConnections.findIndex(
+                  (eachConnection: { _id: string }) => {
+                    return eachConnection._id === this.existingConnection?._id;
                   }
+                );
+                if (existingConnectionIndex !== -1) {
+                  const newChatConnections = [...result.chatConnections];
+                  newChatConnections.splice(existingConnectionIndex, 1);
+                  this.chatConnections = [
+                    this.existingConnection,
+                    ...newChatConnections,
+                  ];
                 } else {
-                  this.chatConnections = result.chatConnections;
+                  this.chatConnections = [
+                    this.existingConnection,
+                    ...result.chatConnections,
+                  ];
                 }
+              } else if (this.particularConnection) {
+                console.log(this.particularConnection);
+                const existingConnectionIndex = result.chatConnections.findIndex(
+                  (eachConnection: { _id: string }) => {
+                    return (
+                      eachConnection._id === this.particularConnection?._id
+                    );
+                  }
+                );
+                if (existingConnectionIndex === -1) {
+                  this.chatConnections = [
+                    this.particularConnection,
+                    ...result.chatConnections,
+                  ];
+                }
+              } else {
+                this.chatConnections = result.chatConnections;
               }
-            },
-            () => {
-              return this.router.navigate(['/log-in']);
             }
-          );
-      }
-    });
+          }
+        },
+        () => {
+          return this.router.navigate(['/log-in']);
+        }
+      );
     this.userSubject = this.userService.userDataSubject.subscribe((result) => {
       this.notifications = result.notifications;
       this.pendingRequest = result.pendingRequests;
@@ -197,6 +205,36 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cd.detectChanges();
   }
 
+  private latestChatConnection() {
+    this.chatConnectionSubscription = this.chatService.latestChatConnection.subscribe(
+      (result) => {
+        this.existingConnection = result;
+      },
+      () => {
+        return this.router.navigate(['/log-in']);
+      }
+    );
+  }
+  private currentConnection() {
+    this.latestChatConnectionSubscription = this.chatService.currentChatConnection.subscribe(
+      (result) => {
+        this.particularConnection = result;
+        if (this.chatConnections) {
+          const existingConnectionIndex = this.chatConnections.findIndex(
+            (eachConnection: { _id: string }) => {
+              return eachConnection._id === this.particularConnection?._id;
+            }
+          );
+          if (existingConnectionIndex === -1) {
+            this.chatConnections = [
+              this.particularConnection,
+              ...this.chatConnections,
+            ];
+          }
+        }
+      }
+    );
+  }
   private getUserData() {
     this.userService.userData().subscribe(
       () => {},
@@ -357,14 +395,14 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     );
   }
-  // onClickLink() {
-  //   // this.showEmptySpace = false;
-  // }
   ngOnDestroy() {
     this.searchSubscriber.unsubscribe();
     this.userSubject.unsubscribe();
     if (this.chatConnectionSubscription) {
       this.chatConnectionSubscription.unsubscribe();
+    }
+    if (this.latestChatConnectionSubscription) {
+      this.latestChatConnectionSubscription.unsubscribe();
     }
   }
 }

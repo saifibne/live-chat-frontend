@@ -187,6 +187,7 @@ export class UserService {
         if (result) {
           return this.http.get<{
             message: string;
+            code: number;
             chatConnections: ChatConnectionModel[];
           }>('http://localhost:3000/get-chat-channels', {
             headers: new HttpHeaders({
@@ -205,6 +206,7 @@ export class UserService {
         if (result) {
           return this.http.get<{
             message: string;
+            code: number;
             friends: {
               _id: string;
               userId: {
