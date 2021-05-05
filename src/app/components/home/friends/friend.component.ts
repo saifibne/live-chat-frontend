@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
+import { delay, switchMap } from 'rxjs/operators';
 
 import { UserService } from '../../../services/user.service';
 import { UserInterface } from '../../../model/user.model';
@@ -18,7 +18,8 @@ export class FriendComponent implements OnInit {
   chatIcon = faCommentDots;
   calenderIcon = faCalendar;
   emailIcon = faEnvelope;
-  user!: UserInterface;
+  user!: UserInterface | undefined;
+  showLoadingChats!: boolean;
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
@@ -30,10 +31,14 @@ export class FriendComponent implements OnInit {
     this.route.queryParams
       .pipe(
         switchMap((result) => {
+          this.showLoadingChats = true;
+          this.user = undefined;
           return this.userService.getFriendDetails(result['friendId']);
-        })
+        }),
+        delay(5000)
       )
       .subscribe((result) => {
+        this.showLoadingChats = false;
         this.user = result.userDetails;
       });
   }

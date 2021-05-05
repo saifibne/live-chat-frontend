@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { UserService } from './services/user.service';
 
 @Component({
@@ -7,8 +7,16 @@ import { UserService } from './services/user.service';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  constructor(private userService: UserService) {}
+  showProgressBar!: boolean;
+  constructor(
+    private userService: UserService,
+    private cd: ChangeDetectorRef
+  ) {}
   ngOnInit() {
     this.userService.autoLogin();
+    this.userService.showProgressBar.subscribe((result) => {
+      this.showProgressBar = result;
+      this.cd.detectChanges();
+    });
   }
 }

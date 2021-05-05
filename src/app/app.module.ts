@@ -32,6 +32,7 @@ import {
 } from '@angular/material-moment-adapter';
 import { ArrayFilterPipe } from './pipes/arrayFilter.pipe';
 import { LoadingComponent } from './components/loading/loading.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 const MY_DATE_FORMATS = {
   parse: {
@@ -71,6 +72,7 @@ const MY_DATE_FORMATS = {
     MatInputModule,
     MatMomentDateModule,
     MatDatepickerModule,
+    MatProgressBarModule,
   ],
   providers: [
     {

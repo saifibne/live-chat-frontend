@@ -21,6 +21,7 @@ export class UserService {
       { userId: { _id: string; name: string; pictureUrl: string } }
     ];
   }>();
+  showProgressBar = new Subject<boolean>();
 
   constructor(private http: HttpClient, private router: Router) {}
 

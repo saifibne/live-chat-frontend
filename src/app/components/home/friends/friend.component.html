@@ -1,4 +1,9 @@
 <div class="total-wrapper">
+  <div class="message-loading__wrapper" *ngIf="showLoadingChats">
+    <div class="message-loading__inner-wrapper">
+      <app-loading></app-loading>
+    </div>
+  </div>
   <div *ngIf="user">
     <div class="friend-1__wrapper">
       <div class="friend-1__details">

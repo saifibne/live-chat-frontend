@@ -236,8 +236,11 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
   private getUserData() {
+    this.userService.showProgressBar.next(true);
     this.userService.userData().subscribe(
-      () => {},
+      () => {
+        this.userService.showProgressBar.next(false);
+      },
       () => {
         return this.router.navigate(['/log-in']);
       }
@@ -343,8 +346,9 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   clickAccept(userId: string) {
     this.userService.acceptFriendRequest(userId).subscribe(
-      (result) => {
-        console.log(result);
+      () => {
+        this.closeFriendRequests();
+        this.getUserData();
       },
       () => {
         return this.router.navigate(['/log-in']);
@@ -353,8 +357,9 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   clickReject(userId: string) {
     this.userService.rejectFriendRequest(userId).subscribe(
-      (result) => {
-        console.log(result);
+      () => {
+        this.closeFriendRequests();
+        this.getUserData();
       },
       () => {
         return this.router.navigate(['/log-in']);

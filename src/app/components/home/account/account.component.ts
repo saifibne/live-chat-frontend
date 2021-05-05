@@ -23,8 +23,10 @@ export class AccountComponent implements OnInit {
   @ViewChild('successPassword') successPassword!: ElementRef;
   constructor(private userService: UserService, private renderer: Renderer2) {}
   ngOnInit() {
+    this.userService.showProgressBar.next(true);
     this.userService.getOwnerDetails().subscribe((result) => {
       if (result) {
+        this.userService.showProgressBar.next(false);
         this.user = result.userDetails;
         this.form = new FormGroup({
           firstName: new FormControl(result.userDetails.name.split(' ')[0]),
