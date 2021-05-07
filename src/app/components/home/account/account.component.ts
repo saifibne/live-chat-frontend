@@ -124,4 +124,7 @@ export class AccountComponent implements OnInit {
         }
       });
   }
+  onLogOut() {
+    return this.userService.logOut();
+  }
 }

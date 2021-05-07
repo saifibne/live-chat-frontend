@@ -32,7 +32,12 @@ export class ChatService {
             message: string;
             user: {
               _id: string;
-              userId: { _id: string; name: string; pictureUrl: string };
+              userId: {
+                _id: string;
+                name: string;
+                pictureUrl: string;
+                status: string;
+              };
             };
             chats: {
               owner: boolean;

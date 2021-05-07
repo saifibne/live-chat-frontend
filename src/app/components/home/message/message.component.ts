@@ -36,7 +36,12 @@ export class MessageComponent implements OnInit, OnDestroy {
   userDetails!:
     | {
         _id: string;
-        userId: { _id: string; name: string; pictureUrl: string };
+        userId: {
+          _id: string;
+          name: string;
+          pictureUrl: string;
+          status: string;
+        };
       }
     | undefined;
   chats: {
@@ -80,6 +85,9 @@ export class MessageComponent implements OnInit, OnDestroy {
             'visibility',
             'hidden'
           );
+          if (this.observer) {
+            this.observer.disconnect();
+          }
           return this.chatService.getChat(result.chatId);
         }),
         delay(5000)
@@ -92,9 +100,9 @@ export class MessageComponent implements OnInit, OnDestroy {
             this.userDetails = result.user;
             this.currentChatConnection(this.userDetails.userId._id);
             this.chats = result.chats;
-            if (this.observer) {
-              this.observer.disconnect();
-            }
+            // if (this.observer) {
+            //   this.observer.disconnect();
+            // }
             this.setResetCounterObserver(this.resetCounter.nativeElement);
             if (!result.pagination) {
               this.renderer.setStyle(
@@ -128,7 +136,16 @@ export class MessageComponent implements OnInit, OnDestroy {
             this.scrollToBottom();
             this.prevScrollHeight = this.messageWrapper.nativeElement.scrollHeight;
             socket.off(this.socketEventName);
+            socket.off(`${this.socketEventName}-status`);
             this.socketEventName = this.groupId;
+            socket.on(
+              `${this.groupId}-status`,
+              (socketData: { status: string }) => {
+                if (this.userDetails) {
+                  this.userDetails.userId.status = socketData.status;
+                }
+              }
+            );
             socket.on(
               this.groupId,
               (socketData: {

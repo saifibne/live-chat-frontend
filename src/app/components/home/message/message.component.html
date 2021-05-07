@@ -13,12 +13,16 @@
   <div class="message-header__wrapper" *ngIf="userDetails">
     <div class="message-header-img">
       <img [src]="userDetails.userId.pictureUrl" alt="" class="user-img" />
+      <div
+        class="online-icon"
+        *ngIf="userDetails.userId.status === 'online'"
+      ></div>
     </div>
     <div class="message-header__text">
       <div class="message-header__name">
         {{ userDetails.userId.name | titlecase }}
       </div>
-      <div class="message-header__status">online</div>
+      <div class="message-header__status">{{ userDetails.userId.status }}</div>
     </div>
   </div>
   <div class="messages-wrapper" #messageWrapper>

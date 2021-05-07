@@ -1,4 +1,9 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  OnInit,
+} from '@angular/core';
 import { UserService } from './services/user.service';
 
 @Component({
@@ -18,5 +23,8 @@ export class AppComponent implements OnInit {
       this.showProgressBar = result;
       this.cd.detectChanges();
     });
+  }
+  @HostListener('window:beforeunload') changeStatus() {
+    this.userService.setUserStatus('offline');
   }
 }

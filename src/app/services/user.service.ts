@@ -42,9 +42,15 @@ export class UserService {
           if (result.message === 'successfully login') {
             this.userToken.next(result);
             localStorage.setItem('token', result.token);
+            this.setUserStatus('online');
           }
         })
       );
+  }
+  logOut() {
+    localStorage.removeItem('token');
+    this.setUserStatus('offline');
+    return this.router.navigate(['/log-in']);
   }
   autoLogin() {
     const token = localStorage.getItem('token');
@@ -64,6 +70,7 @@ export class UserService {
           console.log(result);
           if (result.code === 200) {
             this.userToken.next(result);
+            this.setUserStatus('online');
             localStorage.setItem('token', result.token);
           } else {
             this.userToken.next(null);
@@ -311,5 +318,26 @@ export class UserService {
         }
       })
     );
+  }
+  setUserStatus(status: string) {
+    this.userToken
+      .pipe(
+        exhaustMap((result) => {
+          if (result) {
+            return this.http.get<{ message: string }>(
+              'http://localhost:3000/user-status',
+              {
+                headers: new HttpHeaders({
+                  Authorization: `Bearer ${result.token}`,
+                }),
+                params: new HttpParams().set('status', status),
+              }
+            );
+          } else {
+            return of(null);
+          }
+        })
+      )
+      .subscribe();
   }
 }

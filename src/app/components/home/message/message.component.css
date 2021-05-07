@@ -25,11 +25,22 @@
 .message-header-img {
   height: 50px;
   width: 50px;
+  position: relative;
 }
 .user-img {
   height: 100%;
   width: 100%;
   border-radius: 50%;
+}
+.online-icon {
+  width: 0.8rem;
+  height: 0.8rem;
+  position: absolute;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background-color: #44a675;
+  top: 0;
+  right: 0;
 }
 .load-more {
   visibility: hidden;
