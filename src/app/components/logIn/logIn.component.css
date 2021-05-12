@@ -1,47 +1,49 @@
 .log-in__wrapper {
   min-height: 100vh;
   min-width: 100vw;
-  background-image: url("../../../assets/backgroungImg.svg");
-  background-size: contain;
+  background-color: #f7f7ff;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 .signUp-wrapper {
-  position: fixed;
-  top: 8px;
-  right: 6px;
   display: flex;
   align-items: center;
 }
 .signUp-text {
-  font-size: 14px;
-  color: #a9a9a9;
+  font-size: 15px;
+  color: #495057;
 }
 .signUp-link {
-  font-size: 12px;
-  background-color: #ffcf46;
-  padding: 4px 10px;
+  font-size: 15px;
+  color: #7269ef;
   margin-left: 5px;
-  border-radius: 5px;
-  color: #6d5825;
-  font-weight: 600;
+  font-weight: 400;
   cursor: pointer;
   text-decoration: none;
-  transition: all 200ms linear;
-}
-.signUp-link:hover {
-  background-color: #ffebb1;
 }
 .log-in__box {
-  width: 400px;
+  width: 460px;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 0.25rem;
+  margin-bottom: 30px;
 }
 .logIn-heading {
-  color: #3295db;
-  font-size: 40px;
-  text-align: center;
-  font-weight: 700;
   margin-bottom: 20px;
+}
+.heading-1 {
+  font-weight: 600;
+  font-size: 20px;
+  color: #495057;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.heading-2 {
+  font-size: 15px;
+  color: #7a7f9a;
+  margin-bottom: 24px;
 }
 .logIn-email,
 .logIn-password {
@@ -52,73 +54,80 @@
 }
 .logIn-password > label,
 .logIn-email > label {
-  font-size: 16px;
-  color: #4a4a4a;
+  font-size: 15px;
+  color: #495057;
   font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: 8px;
 }
 .each-input {
-  border-radius: 10px;
-  box-shadow: inset 0 2px 5px rgba(26, 26, 26, 0.1);
-  padding: 10px 15px;
+  position: relative;
+  border-radius: 0.4rem;
+  height: 43px;
+  padding: 8px 16px 8px 60px;
   color: #646464;
-  background-color: #f7f7f7;
-  border: none;
+  border: 1px solid #e6ebf5;
+  font-family: inherit;
+  font-size: 14px;
   outline: none;
-  font-size: 20px;
-  transition: all 200ms linear;
   width: 100%;
+  background-color: rgba(230, 235, 245, 0.25) !important;
 }
-.each-input:focus {
-  background: transparent;
-  border-color: #3295db;
-  box-shadow: 0 0 10px rgba(50, 149, 219, 0.5);
-  color: #4a4a4a;
+.input-icon {
+  width: 48px;
+  height: 43px;
+  padding: 8px 16px;
+  position: absolute;
+  top: 29px;
+  left: 0;
+  border-right: 1px solid #e6ebf5;
+  z-index: 2;
+  color: #495057;
 }
 .password-show__icon {
   background-image: url("../../../assets/show-password.svg");
-  height: 20px;
-  width: 20px;
+  height: 18px;
+  width: 18px;
   position: absolute;
-  top: 35px;
+  top: 40px;
   right: 10px;
   filter: invert(66%) sepia(73%) saturate(1%) hue-rotate(339deg) brightness(90%)
     contrast(87%);
 }
 .sign-btn {
   width: 100%;
-  background-color: #ffcf46;
-  font-size: 18px;
-  padding: 6px 40px;
-  color: #6d5825;
-  border: none;
+  background-color: #7269ef;
+  border: 1px solid #7269ef;
+  font-size: 15px;
+  color: #fff;
   border-radius: 5px;
-  line-height: 2;
-  font-weight: 700;
+  padding: 0.47rem 0.75rem;
+  line-height: 1.5;
+  font-weight: 400;
   cursor: pointer;
   margin-top: 25px;
   transition: all 200ms linear;
   box-shadow: 2px 2px 10px 2px rgba(91, 91, 91, 0.1);
 }
 .sign-btn:hover {
-  background-color: #ffebb1;
+  background-color: #6159cb;
 }
 .sign-btn:focus {
-  background-color: #ffebb1;
+  background-color: #6159cb;
   outline: none;
 }
 .sign-btn:disabled {
-  background-color: #ffdd7f;
+  background-color: #7269ef;
   cursor: not-allowed;
 }
 .warning-msg {
-  font-size: 12px;
-  color: red;
+  font-size: 13px;
+  color: #ef476f;
   margin: 6px 0 0 2px;
 }
 input.ng-invalid.ng-touched {
-  background-color: #ffe4e2;
-  border: 1px solid #ce3e44;
-  box-shadow: 0 0 5px rgba(206, 62, 68, 0.5);
+  border-color: #ef476f;
+  box-shadow: 0 0 0 0.15rem rgba(239, 71, 111, 0.25);
 }
 .wrong-input {
   font-size: 14px;

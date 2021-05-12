@@ -34,8 +34,8 @@ export class FriendComponent implements OnInit {
           this.showLoadingChats = true;
           this.user = undefined;
           return this.userService.getFriendDetails(result['friendId']);
-        }),
-        delay(5000)
+        })
+        // delay(5000)
       )
       .subscribe((result) => {
         this.showLoadingChats = false;

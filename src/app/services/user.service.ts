@@ -67,7 +67,6 @@ export class UserService {
       )
       .subscribe(
         (result) => {
-          console.log(result);
           if (result.code === 200) {
             this.userToken.next(result);
             this.setUserStatus('online');

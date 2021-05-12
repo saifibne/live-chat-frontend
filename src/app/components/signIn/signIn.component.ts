@@ -292,6 +292,5 @@ export class SignInComponent implements OnInit {
     this.userService.signUp(form).subscribe((result) => {
       console.log(result);
     });
-    console.log(this.form);
   }
 }

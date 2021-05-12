@@ -23,6 +23,7 @@ import {
   delay,
   distinctUntilChanged,
   switchMap,
+  take,
 } from 'rxjs/operators';
 import { UserService } from '../../../services/user.service';
 import { FriendListInterface, SearchUser } from '../../../model/user.model';
@@ -54,10 +55,10 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   showLoadingChats!: boolean;
   userDetails!: { name: string; pictureUrl: string };
   searchedUsers: SearchUser[] = [];
-  chatConnections: ChatConnectionModel[] = [];
+  chatConnections!: ChatConnectionModel[] | undefined;
   existingConnection: ChatConnectionModel | undefined;
   particularConnection: ChatConnectionModel | undefined;
-  friends: FriendListInterface[] = [];
+  friends: FriendListInterface[] | undefined;
   notifications: { message: string; imageUrl: string }[] = [];
   pendingRequest: {
     userId: { _id: string; name: string; pictureUrl: string };
@@ -95,6 +96,8 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
         switchMap((params) => {
           this.existingConnection = undefined;
           this.particularConnection = undefined;
+          this.chatConnections = undefined;
+          this.friends = undefined;
           this.showEmptySpace = true;
           if (params['linkName'] === 'friends') {
             this.params = 'friends';
@@ -103,7 +106,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             this.headingText = 'Friends';
             this.showEmail = true;
-            this.chatConnections = [];
+            // this.chatConnections = [];
             this.getUserData();
             this.showLoadingChats = true;
             return this.userService.getFriendsList();
@@ -113,12 +116,13 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
             this.currentConnection();
             this.headingText = 'chats';
             this.showEmail = false;
-            this.friends = [];
+            // this.friends = [];
             this.getUserData();
             this.showLoadingChats = true;
             return this.userService.chatConnections();
           }
         })
+        // delay(5000)
       )
       .subscribe(
         (result: any) => {
@@ -148,7 +152,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
                   ];
                 }
               } else if (this.particularConnection) {
-                console.log(this.particularConnection);
                 const existingConnectionIndex = result.chatConnections.findIndex(
                   (eachConnection: { _id: string }) => {
                     return (
@@ -190,7 +193,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       )
       .subscribe((result) => {
-        console.log(result);
         if (result) {
           this.searchedUsers = result.users;
         } else {
@@ -315,34 +317,37 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
   sendRequest(userId: string) {
-    this.userService.sendFriendRequest(userId).subscribe((result) => {
-      console.log(result);
-      if (result) {
-        if (result.code === 202) {
-          this.renderer.addClass(
-            this.notification.nativeElement,
-            'show-notification'
-          );
-          setTimeout(() => {
-            this.renderer.removeClass(
+    this.userService
+      .sendFriendRequest(userId)
+      .pipe(take(1))
+      .subscribe((result) => {
+        if (result) {
+          console.log(result);
+          if (result.code === 202) {
+            this.renderer.addClass(
               this.notification.nativeElement,
               'show-notification'
             );
-          }, 2000);
-        } else if (result.code === 200) {
-          this.renderer.addClass(
-            this.successNotification.nativeElement,
-            'show-notification'
-          );
-          setTimeout(() => {
-            this.renderer.removeClass(
+            setTimeout(() => {
+              this.renderer.removeClass(
+                this.notification.nativeElement,
+                'show-notification'
+              );
+            }, 2000);
+          } else if (result.code === 200) {
+            this.renderer.addClass(
               this.successNotification.nativeElement,
               'show-notification'
             );
-          }, 2000);
+            setTimeout(() => {
+              this.renderer.removeClass(
+                this.successNotification.nativeElement,
+                'show-notification'
+              );
+            }, 2000);
+          }
         }
-      }
-    });
+      });
   }
   clickAccept(userId: string) {
     this.userService.acceptFriendRequest(userId).subscribe(

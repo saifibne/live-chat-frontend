@@ -33,6 +33,7 @@ import {
 import { ArrayFilterPipe } from './pipes/arrayFilter.pipe';
 import { LoadingComponent } from './components/loading/loading.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { ArrayFriendPipe } from './pipes/arrayFriend.pipe';
 
 const MY_DATE_FORMATS = {
   parse: {
@@ -58,6 +59,7 @@ const MY_DATE_FORMATS = {
     ShortTextPipe,
     AccountComponent,
     ArrayFilterPipe,
+    ArrayFriendPipe,
     LoadingComponent,
   ],
   imports: [

@@ -10,7 +10,7 @@
           <img [src]="user.pictureUrl" alt="" class="account-img" />
         </div>
         <div class="account-name">{{ user.name | titlecase }}</div>
-        <div class="account-btn">
+        <div class="account-btn" (click)="onLogOut()">
           <div class="account-btn__icon">
             <svg
               class="hw-18 d-none d-sm-inline-block"
@@ -26,7 +26,7 @@
               ></path>
             </svg>
           </div>
-          <div class="account-btn__text" (click)="onLogOut()">Logout</div>
+          <div class="account-btn__text">Logout</div>
         </div>
       </div>
       <div class="account-summary__card">

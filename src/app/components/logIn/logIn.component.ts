@@ -1,6 +1,8 @@
 import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faLock } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-log-in',
@@ -10,6 +12,8 @@ import { Router } from '@angular/router';
 export class LogInComponent {
   showPassword = false;
   showError = false;
+  userIcon = faUser;
+  lockIcon = faLock;
   @ViewChild('passwordInput') passwordInput!: ElementRef;
   constructor(
     private renderer: Renderer2,

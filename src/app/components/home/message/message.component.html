@@ -73,27 +73,38 @@
     </div>
   </div>
   <div class="message-send__wrapper" *ngIf="userDetails">
-    <div class="message-send__input">
-      <label for="message">
-        <input
-          type="text"
-          id="message"
-          class="message-input"
-          placeholder="Write Your Message ..."
-          autocomplete="off"
-          #messageInput
-        />
-      </label>
-    </div>
-    <div class="message-send__btn" (click)="sendMessage(messageInput.value)">
-      <svg class="hw-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M14 5l7 7m0 0l-7 7m7-7H3"
-        ></path>
-      </svg>
-    </div>
+    <form>
+      <div class="message-send__input">
+        <label for="message">
+          <input
+            type="text"
+            id="message"
+            class="message-input"
+            placeholder="Write Your Message ..."
+            autocomplete="off"
+            #messageInput
+          />
+        </label>
+      </div>
+      <button
+        class="message-send__btn"
+        type="submit"
+        (click)="sendMessage(messageInput.value)"
+      >
+        <svg
+          class="hw-24"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M14 5l7 7m0 0l-7 7m7-7H3"
+          ></path>
+        </svg>
+      </button>
+    </form>
   </div>
 </div>

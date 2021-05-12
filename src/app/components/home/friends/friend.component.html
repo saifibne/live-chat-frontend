@@ -37,7 +37,13 @@
       <div class="friend-2__block">
         <div>
           <div class="title">Birthdate</div>
-          <div class="text">{{ user.birthDate }}</div>
+          <div class="text">
+            {{
+              user.birthDate === "Not Given"
+                ? "Not Given"
+                : (user.birthDate | date: "mediumDate")
+            }}
+          </div>
         </div>
         <div>
           <fa-icon [icon]="calenderIcon" class="icon"></fa-icon>

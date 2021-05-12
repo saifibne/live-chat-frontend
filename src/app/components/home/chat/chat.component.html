@@ -61,6 +61,38 @@
       </div>
     </div>
     <div class="chats-wrapper" #chatsWrapper>
+      <div
+        class="empty-chats__wrapper"
+        *ngIf="chatConnections && chatConnections.length === 0"
+      >
+        <div class="empty-chats">
+          <img
+            src="../../../../assets/—Pngtree—bubbles chat customer discuss group_5253785.webp"
+            alt=""
+            class="empty-chats__img"
+          />
+          <div class="empty-chats__heading">There is no chats</div>
+          <div class="empty-chats__text">
+            Please add some friends to start chatting.
+          </div>
+        </div>
+      </div>
+      <div class="empty-chats__wrapper" *ngIf="friends && friends.length === 0">
+        <div class="empty-chats">
+          <img
+            src="../../../../assets/icons8-friends-100.png"
+            alt=""
+            class="empty-chats__img"
+          />
+          <div class="empty-chats__heading">You don't have any friends</div>
+          <div class="empty-chats__text">
+            Please add some friends to start chatting.
+          </div>
+          <div class="empty-chats__btn" (click)="clickAddUser()">
+            Add Friends
+          </div>
+        </div>
+      </div>
       <div class="inner-padding">
         <div class="chats-loading__container" *ngIf="showLoadingChats">
           <div
@@ -121,7 +153,7 @@
         <div class="friends-container" *ngIf="friends">
           <div
             class="single-chat__box"
-            *ngFor="let eachFriend of friends"
+            *ngFor="let eachFriend of friends | searchFriend: searchArrayText"
             routerLink="friend"
             routerLinkActive="single-chat__box-active"
             #linkActive="routerLinkActive"

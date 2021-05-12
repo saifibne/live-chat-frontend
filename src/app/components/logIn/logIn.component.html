@@ -1,14 +1,14 @@
 <div class="log-in__wrapper">
-  <div class="signUp-wrapper">
-    <div class="signUp-text">Don't have an account?</div>
-    <a class="signUp-link" routerLink="/sign-up">Sign up free!</a>
+  <div class="logIn-heading">
+    <div class="heading-1">Sign In</div>
+    <div class="heading-2">Sign in to continue to chat.</div>
   </div>
   <div class="log-in__box">
-    <div class="logIn-heading">Sign In</div>
     <div class="wrong-input" *ngIf="showError">Incorrect Email Or Password</div>
     <form class="logIn-form" #form="ngForm" (ngSubmit)="onSignIn(form.value)">
       <div class="logIn-email">
         <label for="email">Email Address</label>
+        <fa-icon [icon]="userIcon" class="input-icon"></fa-icon>
         <input
           type="text"
           id="email"
@@ -28,6 +28,7 @@
       </div>
       <div class="logIn-password">
         <label for="password">Password</label>
+        <fa-icon [icon]="lockIcon" class="input-icon"></fa-icon>
         <input
           type="password"
           id="password"
@@ -50,5 +51,9 @@
         </button>
       </div>
     </form>
+  </div>
+  <div class="signUp-wrapper">
+    <div class="signUp-text">Don't have an account?</div>
+    <a class="signUp-link" routerLink="/sign-up">Sign up free!</a>
   </div>
 </div>

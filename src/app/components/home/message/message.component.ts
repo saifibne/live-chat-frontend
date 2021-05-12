@@ -89,8 +89,8 @@ export class MessageComponent implements OnInit, OnDestroy {
             this.observer.disconnect();
           }
           return this.chatService.getChat(result.chatId);
-        }),
-        delay(5000)
+        })
+        // delay(5000)
       )
       .subscribe(
         (result) => {
@@ -110,7 +110,11 @@ export class MessageComponent implements OnInit, OnDestroy {
                 'visibility',
                 'hidden'
               );
-              this.renderer.setStyle(this.loadMore.nativeElement, 'height', 0);
+              this.renderer.setStyle(
+                this.loadMore.nativeElement,
+                'height',
+                '20px'
+              );
             } else {
               this.renderer.setStyle(
                 this.loadMore.nativeElement,
@@ -140,8 +144,11 @@ export class MessageComponent implements OnInit, OnDestroy {
             this.socketEventName = this.groupId;
             socket.on(
               `${this.groupId}-status`,
-              (socketData: { status: string }) => {
-                if (this.userDetails) {
+              (socketData: { userId: string; status: string }) => {
+                if (
+                  this.userDetails &&
+                  this.userDetails.userId._id === socketData.userId
+                ) {
                   this.userDetails.userId.status = socketData.status;
                 }
               }
@@ -220,7 +227,6 @@ export class MessageComponent implements OnInit, OnDestroy {
   sendMessage(message: string) {
     this.chatService.addMessage(message, this.groupId).subscribe(
       (result) => {
-        console.log(result);
         if (result) {
           this.scrollToBottom();
         }
@@ -261,7 +267,6 @@ export class MessageComponent implements OnInit, OnDestroy {
             this.messageWrapper.nativeElement.scrollHeight -
             (this.messageWrapper.nativeElement.scrollTop +
               this.messageWrapper.nativeElement.clientHeight);
-          console.log(calculateHeight);
           if (calculateHeight > 200) {
             this.notificationCounter += 1;
             this.renderer.addClass(
