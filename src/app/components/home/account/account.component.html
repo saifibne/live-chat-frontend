@@ -146,7 +146,16 @@
               </mat-form-field>
             </div>
             <div class="submit-form">
-              <button class="submit-btn" type="submit">Save Changes</button>
+              <button class="submit-btn" type="submit">
+                <span *ngIf="showLoading === true"
+                  ><mat-progress-spinner
+                    mode="indeterminate"
+                    diameter="20"
+                    class="progress-spinner"
+                  ></mat-progress-spinner
+                ></span>
+                <span *ngIf="showLoading === false">Save Changes</span>
+              </button>
             </div>
           </div>
         </form>

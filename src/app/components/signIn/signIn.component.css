@@ -5,6 +5,29 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+}
+.sign-success {
+  display: flex;
+  position: absolute;
+  width: 100%;
+  justify-content: center;
+  top: 30px;
+  left: 0;
+  transform: translateY(-70px);
+  visibility: hidden;
+  transition: all 200ms ease-out;
+}
+.show-sign__success {
+  transform: translateY(0);
+  visibility: visible;
+}
+.sign-success__text {
+  background-color: #d0f8d0;
+  border: 1px solid #47ff47;
+  box-shadow: 0 0 5px rgb(20, 81, 0);
+  padding: 6px 15px;
+  border-radius: 6px;
 }
 .sign-in__title {
   font-size: 2.5rem;
@@ -76,8 +99,6 @@
   margin-top: 25px;
 }
 .each-input {
-  /*width: 360px;*/
-  /*height: 44px;*/
   margin-bottom: 20px;
   position: relative;
 }

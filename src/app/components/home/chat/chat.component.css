@@ -6,7 +6,6 @@
 .component-wrapper {
   width: 30%;
   flex-shrink: 0;
-  /*display: inline-block;*/
 }
 .header-wrapper {
   width: 100%;
@@ -122,10 +121,6 @@
 .chats-wrapper::-webkit-scrollbar {
   display: none;
 }
-.chats-container,
-.friends-container {
-  /*padding: 10px;*/
-}
 .empty-chats__wrapper {
   height: calc(100% - 20px);
   width: 100%;
@@ -169,7 +164,6 @@
 .single-chat__box {
   display: flex;
   padding: 16px;
-  /*justify-content: space-between;*/
   border: 1px solid #e5e9f2;
   border-radius: 4px;
   margin-bottom: 6px;
@@ -184,7 +178,6 @@
   color: white;
 }
 .chat-texts {
-  /*width: 80%;*/
   padding-left: 14px;
   width: calc(100% - 50px);
 }
@@ -281,10 +274,6 @@
   border-top: 1px solid #e5e9f2;
   overflow: auto;
   scrollbar-width: none;
-  /*position: relative;*/
-  /*display: flex;*/
-  /*justify-content: center;*/
-  /*align-items: center;*/
 }
 .search-result::-webkit-scrollbar {
   display: none;
@@ -294,10 +283,6 @@
   border-top: 1px solid #e5e9f2;
 }
 .clear-btn {
-  /*position: fixed;*/
-  /*left: 0;*/
-  /*bottom: 0;*/
-  /*width: 100%;*/
   text-align: center;
   width: max-content;
   margin: 0 auto;
@@ -443,10 +428,6 @@
   border-color: #ff337c;
   color: white;
 }
-::ng-deep router-outlet + * {
-  /*width: 70%;*/
-  /*display: inline-block;*/
-}
 .correct-icon {
   font-size: 20px;
   color: #25d366;
@@ -529,6 +510,9 @@
 .loading {
   position: relative;
 }
+.progress-spinner {
+  margin-right: 7px;
+}
 .loading::after {
   display: block;
   content: "";
@@ -548,4 +532,7 @@
   100% {
     left: calc(100% - 20px);
   }
+}
+::ng-deep .mat-progress-spinner circle {
+  stroke: #665dfe;
 }

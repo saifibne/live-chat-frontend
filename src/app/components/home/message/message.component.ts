@@ -8,14 +8,14 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { ChatService } from '../../../services/chat.service';
 import { io } from 'socket.io-client';
-import { UserService } from '../../../services/user.service';
-import { delay, exhaustMap, switchMap, take } from 'rxjs/operators';
-
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { exhaustMap, switchMap, take } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { of } from 'rxjs';
+
+import { ChatService } from '../../../services/chat.service';
+import { UserService } from '../../../services/user.service';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-message',
@@ -90,7 +90,6 @@ export class MessageComponent implements OnInit, OnDestroy {
           }
           return this.chatService.getChat(result.chatId);
         })
-        // delay(5000)
       )
       .subscribe(
         (result) => {
@@ -100,9 +99,6 @@ export class MessageComponent implements OnInit, OnDestroy {
             this.userDetails = result.user;
             this.currentChatConnection(this.userDetails.userId._id);
             this.chats = result.chats;
-            // if (this.observer) {
-            //   this.observer.disconnect();
-            // }
             this.setResetCounterObserver(this.resetCounter.nativeElement);
             if (!result.pagination) {
               this.renderer.setStyle(

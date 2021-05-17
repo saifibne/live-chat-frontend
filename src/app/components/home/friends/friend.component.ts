@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { delay, switchMap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 
 import { UserService } from '../../../services/user.service';
 import { UserInterface } from '../../../model/user.model';
@@ -35,7 +35,6 @@ export class FriendComponent implements OnInit {
           this.user = undefined;
           return this.userService.getFriendDetails(result['friendId']);
         })
-        // delay(5000)
       )
       .subscribe((result) => {
         this.showLoadingChats = false;

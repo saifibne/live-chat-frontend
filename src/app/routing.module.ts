@@ -1,12 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { SignInComponent } from './components/signIn/signIn.component';
-import { LogInComponent } from './components/logIn/logIn.component';
+
 import { HomeComponent } from './components/home/home.component';
 import { ChatComponent } from './components/home/chat/chat.component';
 import { MessageComponent } from './components/home/message/message.component';
 import { FriendComponent } from './components/home/friends/friend.component';
-import { AccountComponent } from './components/home/account/account.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home/chats', pathMatch: 'full' },
@@ -17,7 +15,8 @@ const routes: Routes = [
       {
         path: 'account',
         pathMatch: 'full',
-        component: AccountComponent,
+        loadChildren: () =>
+          import('./modules/account.module').then((m) => m.AccountModule),
       },
       {
         path: ':linkName',
@@ -37,9 +36,14 @@ const routes: Routes = [
   },
   {
     path: 'sign-up',
-    component: SignInComponent,
+    loadChildren: () =>
+      import('./modules/signIn.module').then((m) => m.SignInModule),
   },
-  { path: 'log-in', component: LogInComponent },
+  {
+    path: 'log-in',
+    loadChildren: () =>
+      import('./modules/logIn.module').then((m) => m.LogInModule),
+  },
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

@@ -4,6 +4,7 @@ import { SearchUser, UserInterface } from '../model/user.model';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { exhaustMap, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+
 import { ChatConnectionModel } from '../model/chat.model';
 
 @Injectable({ providedIn: 'root' })

@@ -9,6 +9,15 @@ import {
   ViewChild,
 } from '@angular/core';
 
+import { ActivatedRoute, Router } from '@angular/router';
+import { of, Subject, Subscription } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  take,
+} from 'rxjs/operators';
+
 import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
@@ -16,15 +25,6 @@ import { faTimesCircle } from '@fortawesome/free-regular-svg-icons';
 import { faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { faCheckCircle as correctIcon } from '@fortawesome/free-solid-svg-icons';
-import { ActivatedRoute, Router } from '@angular/router';
-import { of, Subject, Subscription } from 'rxjs';
-import {
-  debounceTime,
-  delay,
-  distinctUntilChanged,
-  switchMap,
-  take,
-} from 'rxjs/operators';
 import { UserService } from '../../../services/user.service';
 import { FriendListInterface, SearchUser } from '../../../model/user.model';
 import { ChatConnectionModel } from '../../../model/chat.model';
@@ -48,6 +48,8 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   showEmail!: boolean;
   searchArrayText = '';
   showDropDown = false;
+  showLoading = false;
+  userId: string | undefined;
   showEmptySpace!: boolean;
   params!: string;
   arr = Array;
@@ -78,6 +80,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('notificationWrapper') notificationWrapper!: ElementRef;
   @ViewChild('notificationPanel') notificationPanel!: ElementRef;
   @ViewChild('chatsWrapper') chatsWrapper!: ElementRef;
+  @ViewChild('searchInputField') searchInputField!: ElementRef;
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
@@ -106,7 +109,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             this.headingText = 'Friends';
             this.showEmail = true;
-            // this.chatConnections = [];
             this.getUserData();
             this.showLoadingChats = true;
             return this.userService.getFriendsList();
@@ -116,13 +118,11 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
             this.currentConnection();
             this.headingText = 'chats';
             this.showEmail = false;
-            // this.friends = [];
             this.getUserData();
             this.showLoadingChats = true;
             return this.userService.chatConnections();
           }
         })
-        // delay(5000)
       )
       .subscribe(
         (result: any) => {
@@ -315,14 +315,19 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
       this.searchWrapper.nativeElement,
       'show-search__popup'
     );
+    this.renderer.setProperty(this.searchInputField.nativeElement, 'value', '');
+    this.popSearchText = '';
   }
   sendRequest(userId: string) {
+    this.userId = userId;
+    this.showLoading = true;
     this.userService
       .sendFriendRequest(userId)
       .pipe(take(1))
       .subscribe((result) => {
         if (result) {
-          console.log(result);
+          this.userId = undefined;
+          this.showLoading = false;
           if (result.code === 202) {
             this.renderer.addClass(
               this.notification.nativeElement,

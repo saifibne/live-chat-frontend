@@ -1,6 +1,7 @@
 import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
-import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
+
+import { UserService } from '../../services/user.service';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
 
@@ -14,6 +15,7 @@ export class LogInComponent {
   showError = false;
   userIcon = faUser;
   lockIcon = faLock;
+  showLoading = false;
   @ViewChild('passwordInput') passwordInput!: ElementRef;
   constructor(
     private renderer: Renderer2,
@@ -38,7 +40,9 @@ export class LogInComponent {
   }
   onSignIn(form: { email: string; password: string }) {
     this.showError = false;
+    this.showLoading = true;
     this.userService.logIn(form.email, form.password).subscribe((result) => {
+      this.showLoading = false;
       switch (result.code) {
         case 201:
           this.showError = true;

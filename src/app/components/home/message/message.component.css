@@ -71,9 +71,6 @@
 }
 .message-send__wrapper {
   padding: 12px 36px;
-  /*display: flex;*/
-  /*align-items: center;*/
-  /*justify-content: space-between;*/
   border-top: 1px solid #e5e9f2;
 }
 .message-send__wrapper > form {
@@ -124,12 +121,6 @@
   position: relative;
   align-self: flex-end;
 }
-/*.each-message {*/
-/*  margin-top: 20px;*/
-/*}*/
-/*.load-more + .each-message {*/
-/*  margin-top: 0;*/
-/*}*/
 .no-owner__each-msg {
   align-self: flex-start;
 }

@@ -1,4 +1,10 @@
 <div class="sign-in__wrapper">
+  <div class="sign-success" #signUpNotification>
+    <div class="sign-success__text">
+      <span><fa-icon [icon]="checkIcon" class="check-icon"></fa-icon></span>
+      User signed up successful, redirecting to login page..
+    </div>
+  </div>
   <div class="sign-in__box">
     <div class="sign-in__title">Sign up</div>
     <div class="sign-in__text">
@@ -26,6 +32,7 @@
             type="file"
             id="picture"
             hidden
+            accept="image/jpeg, image/png, image/webp, image/jpg"
             (change)="onSelectImg($event)"
           />
         </div>

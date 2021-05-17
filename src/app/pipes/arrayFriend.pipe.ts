@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+
 import { FriendListInterface } from '../model/user.model';
 
 @Pipe({

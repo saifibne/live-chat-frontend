@@ -135,9 +135,6 @@
   font-size: 12px;
   color: #adb5bd;
 }
-.user-details__form {
-  /*padding: 20px;*/
-}
 .row {
   display: flex;
   align-items: center;
@@ -178,6 +175,8 @@
   background-color: #f8f9fa;
 }
 .submit-btn {
+  height: 37px;
+  width: 134px;
   padding: 7px 20px;
   background-color: #665dfe;
   border: 1px solid #665dfe;
@@ -186,6 +185,9 @@
   font-size: 14px;
   line-height: 21px;
   align-self: flex-end;
+}
+.progress-spinner {
+  margin: 0 auto;
 }
 .change-password__card {
   border: 1px solid #e5e9f2;
@@ -225,4 +227,7 @@
 }
 .show-error {
   transform: translateX(0);
+}
+::ng-deep .mat-progress-spinner circle {
+  stroke: white;
 }

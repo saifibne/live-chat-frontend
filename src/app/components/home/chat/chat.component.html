@@ -195,7 +195,8 @@
             class="search-input"
             placeholder="Search Users ..."
             [(ngModel)]="popSearchText"
-            (keyup)="onSearch()"
+            (input)="onSearch()"
+            #searchInputField
           />
         </label>
         <div class="search-btn">
@@ -226,12 +227,20 @@
             <div class="result-name">{{ user.name }}</div>
           </div>
           <div class="friend-request">
-            <fa-icon
-              [icon]="userIcon"
-              class="user-icon"
-              (click)="sendRequest(user._id)"
-              *ngIf="!user.alreadyFriend"
-            ></fa-icon>
+            <div>
+              <fa-icon
+                [icon]="userIcon"
+                class="user-icon"
+                (click)="sendRequest(user._id)"
+                *ngIf="!user.alreadyFriend && !showLoading"
+              ></fa-icon>
+              <mat-progress-spinner
+                mode="indeterminate"
+                diameter="20"
+                *ngIf="showLoading && user._id === userId"
+                class="progress-spinner"
+              ></mat-progress-spinner>
+            </div>
             <fa-icon
               [icon]="correctIcon"
               class="correct-icon"

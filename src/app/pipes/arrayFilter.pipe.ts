@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+
 import { ChatConnectionModel } from '../model/chat.model';
 
 @Pipe({

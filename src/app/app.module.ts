@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
-import { AppComponent } from './app.component';
-import { SignInComponent } from './components/signIn/signIn.component';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   SocialLoginModule,
   SocialAuthServiceConfig,
@@ -13,27 +14,19 @@ import {
   FacebookLoginProvider,
   GoogleLoginProvider,
 } from 'angularx-social-login';
-import { HttpClientModule } from '@angular/common/http';
-import { LogInComponent } from './components/logIn/logIn.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+import { AppComponent } from './app.component';
 import { RoutingModule } from './routing.module';
 import { HomeComponent } from './components/home/home.component';
 import { ChatComponent } from './components/home/chat/chat.component';
-import { MessageComponent } from './components/home/message/message.component';
 import { ShortTextPipe } from './pipes/shortText.pipe';
-import { FriendComponent } from './components/home/friends/friend.component';
-import { AccountComponent } from './components/home/account/account.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatInputModule } from '@angular/material/input';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DATE_FORMATS } from '@angular/material/core';
-import {
-  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
-  MatMomentDateModule,
-} from '@angular/material-moment-adapter';
 import { ArrayFilterPipe } from './pipes/arrayFilter.pipe';
-import { LoadingComponent } from './components/loading/loading.component';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ArrayFriendPipe } from './pipes/arrayFriend.pipe';
+import { LoadingComponent } from './components/loading/loading.component';
+import { FriendComponent } from './components/home/friends/friend.component';
+import { MessageComponent } from './components/home/message/message.component';
 
 const MY_DATE_FORMATS = {
   parse: {
@@ -50,31 +43,25 @@ const MY_DATE_FORMATS = {
 @NgModule({
   declarations: [
     AppComponent,
-    SignInComponent,
-    LogInComponent,
     HomeComponent,
     ChatComponent,
-    FriendComponent,
-    MessageComponent,
     ShortTextPipe,
-    AccountComponent,
     ArrayFilterPipe,
     ArrayFriendPipe,
     LoadingComponent,
+    FriendComponent,
+    MessageComponent,
   ],
   imports: [
     BrowserModule,
     FontAwesomeModule,
-    ReactiveFormsModule,
     SocialLoginModule,
     HttpClientModule,
     RoutingModule,
     FormsModule,
     BrowserAnimationsModule,
-    MatInputModule,
-    MatMomentDateModule,
-    MatDatepickerModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
   ],
   providers: [
     {

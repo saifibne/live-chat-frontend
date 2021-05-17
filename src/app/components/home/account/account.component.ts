@@ -5,10 +5,11 @@ import {
   Renderer2,
   ViewChild,
 } from '@angular/core';
-import { UserService } from '../../../services/user.service';
-import { UserInterface } from '../../../model/user.model';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import * as moment from 'moment';
+
+import { UserService } from '../../../services/user.service';
+import { UserInterface } from '../../../model/user.model';
 
 @Component({
   selector: 'app-account',
@@ -19,6 +20,7 @@ export class AccountComponent implements OnInit {
   user!: UserInterface;
   form!: FormGroup;
   showPasswordError = false;
+  showLoading = false;
   @ViewChild('errorPassword') errorPassword!: ElementRef;
   @ViewChild('successPassword') successPassword!: ElementRef;
   constructor(private userService: UserService, private renderer: Renderer2) {}
@@ -64,7 +66,7 @@ export class AccountComponent implements OnInit {
     const address = this.form.get('address')?.value;
     const email = this.form.get('email')?.value;
     const birthDate = this.form.get('birthDate')?.value.toDate();
-    console.log(birthDate);
+    this.showLoading = true;
     this.userService
       .changeUserData(
         this.user._id,
@@ -76,7 +78,7 @@ export class AccountComponent implements OnInit {
         birthDate
       )
       .subscribe((result) => {
-        console.log(result);
+        this.showLoading = false;
       });
   }
   onChangePassword(

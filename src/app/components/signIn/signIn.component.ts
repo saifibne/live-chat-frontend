@@ -5,8 +5,6 @@ import {
   Renderer2,
   ViewChild,
 } from '@angular/core';
-import { faFacebook } from '@fortawesome/free-brands-svg-icons';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
 import {
   AbstractControl,
   FormControl,
@@ -14,17 +12,22 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { SocialAuthService, SocialUser } from 'angularx-social-login';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import {
   FacebookLoginProvider,
   GoogleLoginProvider,
 } from 'angularx-social-login';
+
+import { faFacebook } from '@fortawesome/free-brands-svg-icons';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { UserService } from '../../services/user.service';
-import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sign-in',
@@ -35,6 +38,7 @@ export class SignInComponent implements OnInit {
   fbIcon = faFacebook;
   googleIcon = faGoogle;
   infoIcon = faInfoCircle;
+  checkIcon = faCheckCircle;
   eyeIcon = faEye;
   form!: FormGroup;
   user!: SocialUser;
@@ -52,11 +56,13 @@ export class SignInComponent implements OnInit {
   @ViewChild('picSrc') picSrc!: ElementRef;
   @ViewChild('emailWarning') emailWarning!: ElementRef;
   @ViewChild('passwordWarning') passwordWarning!: ElementRef;
+  @ViewChild('signUpNotification') signUpNotification!: ElementRef;
   constructor(
     private renderer: Renderer2,
     private authService: SocialAuthService,
     private userService: UserService,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) {}
   ngOnInit() {
     this.form = new FormGroup({
@@ -289,8 +295,12 @@ export class SignInComponent implements OnInit {
     } else if (this.imageFile) {
       form.append('image', this.imageFile);
     }
-    this.userService.signUp(form).subscribe((result) => {
-      console.log(result);
+    this.userService.signUp(form).subscribe(() => {
+      this.renderer.addClass(
+        this.signUpNotification.nativeElement,
+        'show-sign__success'
+      );
+      setTimeout(() => this.router.navigate(['log-in']), 300);
     });
   }
 }

@@ -47,7 +47,14 @@
       </div>
       <div class="sign-btn__wrapper">
         <button type="submit" class="sign-btn" [disabled]="!form.valid">
-          Sign In
+          <span *ngIf="showLoading === true">
+            <mat-progress-spinner
+              mode="indeterminate"
+              diameter="20"
+              class="progress-spinner"
+            ></mat-progress-spinner
+          ></span>
+          <span *ngIf="showLoading === false">Log In</span>
         </button>
       </div>
     </form>
