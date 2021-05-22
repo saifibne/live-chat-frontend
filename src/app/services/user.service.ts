@@ -4,8 +4,10 @@ import { SearchUser, UserInterface } from '../model/user.model';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { exhaustMap, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { io, Socket } from 'socket.io-client';
 
 import { ChatConnectionModel } from '../model/chat.model';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -23,16 +25,17 @@ export class UserService {
     ];
   }>();
   showProgressBar = new Subject<boolean>();
+  socket!: Socket;
 
   constructor(private http: HttpClient, private router: Router) {}
 
   signUp(form: FormData) {
-    return this.http.post('http://localhost:3000/sign-up', form);
+    return this.http.post(`${environment.host}/sign-up`, form);
   }
   logIn(email: string, password: string) {
     return this.http
       .post<{ message: string; token: string; code: number; userId: string }>(
-        'http://localhost:3000/log-in',
+        `${environment.host}/log-in`,
         {
           email: email,
           password: password,
@@ -42,15 +45,19 @@ export class UserService {
         tap((result) => {
           if (result.message === 'successfully login') {
             this.userToken.next(result);
+            this.socket = io(environment.host, {
+              extraHeaders: { userId: result.userId },
+            });
             localStorage.setItem('token', result.token);
-            this.setUserStatus('online');
           }
         })
       );
   }
   logOut() {
     localStorage.removeItem('token');
-    this.setUserStatus('offline');
+    if (this.socket) {
+      this.socket.disconnect();
+    }
     return this.router.navigate(['/log-in']);
   }
   autoLogin() {
@@ -61,7 +68,7 @@ export class UserService {
     }
     this.http
       .get<{ message: string; token: string; code: number; userId: string }>(
-        'http://localhost:3000/auto-login',
+        `${environment.host}/auto-login`,
         {
           headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
         }
@@ -70,7 +77,9 @@ export class UserService {
         (result) => {
           if (result.code === 200) {
             this.userToken.next(result);
-            this.setUserStatus('online');
+            this.socket = io(environment.host, {
+              extraHeaders: { userId: result.userId },
+            });
             localStorage.setItem('token', result.token);
           } else {
             this.userToken.next(null);
@@ -89,7 +98,7 @@ export class UserService {
       exhaustMap((result) => {
         if (result) {
           return this.http.get<{ message: string; users: SearchUser[] }>(
-            `http://localhost:3000/search?user=${userName}`,
+            `${environment.host}/search?user=${userName}`,
             {
               headers: new HttpHeaders({
                 Authorization: `Bearer ${result.token}`,
@@ -110,7 +119,7 @@ export class UserService {
             message: string;
             token: string;
             code: number;
-          }>('http://localhost:3000/add-user', {
+          }>(`${environment.host}/add-user`, {
             params: new HttpParams().set('user', userId),
             headers: new HttpHeaders({
               Authorization: `Bearer ${result.token}`,
@@ -136,7 +145,7 @@ export class UserService {
                 { userId: { _id: string; name: string; pictureUrl: string } }
               ];
               code: number;
-            }>('http://localhost:3000/user-data', {
+            }>(`${environment.host}/user-data`, {
               headers: new HttpHeaders({
                 Authorization: `Bearer ${result.token}`,
               }),
@@ -161,7 +170,7 @@ export class UserService {
     return this.userToken.pipe(
       exhaustMap((result) => {
         if (result) {
-          return this.http.get('http://localhost:3000/accept-user-request', {
+          return this.http.get(`${environment.host}/accept-user-request`, {
             params: new HttpParams().set('userId', userId),
             headers: new HttpHeaders({
               Authorization: `Bearer ${result.token}`,
@@ -177,7 +186,7 @@ export class UserService {
     return this.userToken.pipe(
       exhaustMap((result) => {
         if (result) {
-          return this.http.get('http://localhost:3000/reject-request', {
+          return this.http.get(`${environment.host}/reject-request`, {
             params: new HttpParams().set('userId', userId),
             headers: new HttpHeaders({
               Authorization: `Bearer ${result.token}`,
@@ -197,7 +206,7 @@ export class UserService {
             message: string;
             code: number;
             chatConnections: ChatConnectionModel[];
-          }>('http://localhost:3000/get-chat-channels', {
+          }>(`${environment.host}/get-chat-channels`, {
             headers: new HttpHeaders({
               Authorization: `Bearer ${result.token}`,
             }),
@@ -224,7 +233,7 @@ export class UserService {
                 pictureUrl: string;
               };
             }[];
-          }>('http://localhost:3000/friend-list', {
+          }>(`${environment.host}/friend-list`, {
             headers: new HttpHeaders({
               Authorization: `Bearer ${result.token}`,
             }),
@@ -237,7 +246,7 @@ export class UserService {
   }
   getFriendDetails(userId: string) {
     return this.http.get<{ message: string; userDetails: UserInterface }>(
-      'http://localhost:3000/user-details',
+      `${environment.host}/user-details`,
       {
         params: new HttpParams().set('friendId', userId),
       }
@@ -248,7 +257,7 @@ export class UserService {
       exhaustMap((result) => {
         if (result) {
           return this.http.get<{ message: string; userDetails: UserInterface }>(
-            'http://localhost:3000/account-details',
+            `${environment.host}/account-details`,
             {
               headers: new HttpHeaders({
                 Authorization: `Bearer ${result.token}`,
@@ -270,24 +279,21 @@ export class UserService {
     address: string,
     birthDate: Date
   ) {
-    return this.http.post(
-      `http://localhost:3000/update-account-data/${userId}`,
-      {
-        firstName,
-        lastName,
-        phoneNo,
-        email,
-        address,
-        birthDate,
-      }
-    );
+    return this.http.post(`${environment.host}/update-account-data/${userId}`, {
+      firstName,
+      lastName,
+      phoneNo,
+      email,
+      address,
+      birthDate,
+    });
   }
   changePassword(password: string, newPassword: string) {
     return this.userToken.pipe(
       exhaustMap((result) => {
         if (result) {
           return this.http.post<{ message: string; code: number }>(
-            'http://localhost:3000/change-password',
+            `${environment.host}/change-password`,
             {
               password: password,
               newPassword: newPassword,
@@ -308,7 +314,7 @@ export class UserService {
     return this.userToken.pipe(
       exhaustMap((result) => {
         if (result) {
-          return this.http.get('http://localhost:3000/clear-notifications', {
+          return this.http.get(`${environment.host}/clear-notifications`, {
             headers: new HttpHeaders({
               Authorization: `Bearer ${result.token}`,
             }),
@@ -318,26 +324,5 @@ export class UserService {
         }
       })
     );
-  }
-  setUserStatus(status: string) {
-    this.userToken
-      .pipe(
-        exhaustMap((result) => {
-          if (result) {
-            return this.http.get<{ message: string }>(
-              'http://localhost:3000/user-status',
-              {
-                headers: new HttpHeaders({
-                  Authorization: `Bearer ${result.token}`,
-                }),
-                params: new HttpParams().set('status', status),
-              }
-            );
-          } else {
-            return of(null);
-          }
-        })
-      )
-      .subscribe();
   }
 }

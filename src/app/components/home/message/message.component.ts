@@ -8,14 +8,14 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { io } from 'socket.io-client';
 import { exhaustMap, switchMap, take } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { of } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 
 import { ChatService } from '../../../services/chat.service';
 import { UserService } from '../../../services/user.service';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { environment } from '../../../../environments/environment.prod';
 
 @Component({
   selector: 'app-message',
@@ -52,6 +52,7 @@ export class MessageComponent implements OnInit, OnDestroy {
     _id?: string;
   }[] = [];
   runScrollToBottom = true;
+  paramSubscription!: Subscription;
   @ViewChild('messageContainer', { static: true })
   messageContainer!: ElementRef;
   @ViewChild('messageWrapper', { static: true }) messageWrapper!: ElementRef;
@@ -71,9 +72,9 @@ export class MessageComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    const socket = io('http://localhost:3000');
+    console.log('message component running');
     this.chatService.showEmptySpace.next(false);
-    this.route.queryParams
+    this.paramSubscription = this.route.queryParams
       .pipe(
         switchMap((result: Params) => {
           this.groupId = result['chatId'];
@@ -135,10 +136,10 @@ export class MessageComponent implements OnInit, OnDestroy {
             this.cd.detectChanges();
             this.scrollToBottom();
             this.prevScrollHeight = this.messageWrapper.nativeElement.scrollHeight;
-            socket.off(this.socketEventName);
-            socket.off(`${this.socketEventName}-status`);
+            this.userService.socket.off(this.socketEventName);
+            this.userService.socket.off(`${this.socketEventName}-status`);
             this.socketEventName = this.groupId;
-            socket.on(
+            this.userService.socket.on(
               `${this.groupId}-status`,
               (socketData: { userId: string; status: string }) => {
                 if (
@@ -149,7 +150,7 @@ export class MessageComponent implements OnInit, OnDestroy {
                 }
               }
             );
-            socket.on(
+            this.userService.socket.on(
               this.groupId,
               (socketData: {
                 connection: string;
@@ -184,7 +185,7 @@ export class MessageComponent implements OnInit, OnDestroy {
                 pictureUrl: string;
                 time: Date;
               };
-            }>('http://localhost:3000/single-chat-connection', {
+            }>(`${environment.host}/single-chat-connection`, {
               headers: new HttpHeaders({
                 Authorization: `Bearer ${result.token}`,
               }),
@@ -343,5 +344,6 @@ export class MessageComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.chatService.showEmptySpace.next(true);
+    this.paramSubscription.unsubscribe();
   }
 }

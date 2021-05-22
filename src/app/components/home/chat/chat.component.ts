@@ -8,7 +8,6 @@ import {
   Renderer2,
   ViewChild,
 } from '@angular/core';
-
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, Subject, Subscription } from 'rxjs';
 import {
@@ -70,6 +69,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   userSubject!: Subscription;
   chatConnectionSubscription!: Subscription;
   latestChatConnectionSubscription!: Subscription;
+  paramSubscription!: Subscription;
   @ViewChild('popupWrapper') popupWrapper!: ElementRef;
   @ViewChild('searchWrapper') searchWrapper!: ElementRef;
   @ViewChild('dropDown') dropDown!: ElementRef;
@@ -94,7 +94,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showEmptySpace = result;
       this.cd.detectChanges();
     });
-    this.route.params
+    this.paramSubscription = this.route.params
       .pipe(
         switchMap((params) => {
           this.existingConnection = undefined;
@@ -164,6 +164,8 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.particularConnection,
                     ...result.chatConnections,
                   ];
+                } else {
+                  this.chatConnections = result.chatConnections;
                 }
               } else {
                 this.chatConnections = result.chatConnections;
@@ -419,5 +421,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.latestChatConnectionSubscription) {
       this.latestChatConnectionSubscription.unsubscribe();
     }
+    this.paramSubscription.unsubscribe();
   }
 }

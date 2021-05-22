@@ -3,17 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MAT_DATE_FORMATS } from '@angular/material/core';
-import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import {
-  SocialLoginModule,
-  SocialAuthServiceConfig,
-} from 'angularx-social-login';
-import {
-  FacebookLoginProvider,
-  GoogleLoginProvider,
-} from 'angularx-social-login';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -27,18 +17,6 @@ import { ArrayFriendPipe } from './pipes/arrayFriend.pipe';
 import { LoadingComponent } from './components/loading/loading.component';
 import { FriendComponent } from './components/home/friends/friend.component';
 import { MessageComponent } from './components/home/message/message.component';
-
-const MY_DATE_FORMATS = {
-  parse: {
-    dateInput: 'DD/MM/YYYY',
-  },
-  display: {
-    dateInput: 'DD/MM/YYYY',
-    monthYearLabel: 'MMMM YYYY',
-    dateA11yLabel: 'LL',
-    monthYearA11yLabel: 'MMMM YYYY',
-  },
-};
 
 @NgModule({
   declarations: [
@@ -55,7 +33,6 @@ const MY_DATE_FORMATS = {
   imports: [
     BrowserModule,
     FontAwesomeModule,
-    SocialLoginModule,
     HttpClientModule,
     RoutingModule,
     FormsModule,
@@ -63,31 +40,7 @@ const MY_DATE_FORMATS = {
     MatProgressBarModule,
     MatProgressSpinnerModule,
   ],
-  providers: [
-    {
-      provide: 'SocialAuthServiceConfig',
-      useValue: {
-        autoLogin: false,
-        providers: [
-          {
-            id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider(
-              '999950806045-4iub9emqfnmd1jjqj83usjrmh5mhok64.apps.googleusercontent.com'
-            ),
-          },
-          {
-            id: FacebookLoginProvider.PROVIDER_ID,
-            provider: new FacebookLoginProvider('2680349712277582'),
-          },
-        ],
-      } as SocialAuthServiceConfig,
-    },
-    {
-      provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS,
-      useValue: { userStrict: true },
-    },
-    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
-  ],
+  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

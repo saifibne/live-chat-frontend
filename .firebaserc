@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "ecommerce-6416c"
+  },
+  "targets": {
+    "ecommerce-6416c": {
+      "hosting": {
+        "chat": [
+          "chatting-app-6416c"
+        ]
+      }
+    }
+  }
+}

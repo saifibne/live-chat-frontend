@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { of, Subject } from 'rxjs';
 
 import { UserService } from './user.service';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root',
@@ -48,7 +49,7 @@ export class ChatService {
               _id: string;
             }[];
             pagination: boolean;
-          }>('http://localhost:3000/get-chat', {
+          }>(`${environment.host}/get-chat`, {
             headers: new HttpHeaders({
               Authorization: `Bearer ${result.token}`,
             }),
@@ -73,7 +74,7 @@ export class ChatService {
               userId: { _id: string; pictureUrl: string };
               _id: string;
             }[];
-          }>('http://localhost:3000/additional-chats', {
+          }>(`${environment.host}/additional-chats`, {
             headers: new HttpHeaders({
               Authorization: `Bearer ${result.token}`,
             }),
@@ -92,7 +93,7 @@ export class ChatService {
       exhaustMap((result) => {
         if (result) {
           return this.http.post(
-            'http://localhost:3000/add-message',
+            `${environment.host}/add-message`,
             { message: message },
             {
               params: new HttpParams().set('groupId', groupId),
@@ -120,7 +121,7 @@ export class ChatService {
               pictureUrl: string;
               time: Date;
             };
-          }>('http://localhost:3000/single-chat-connection', {
+          }>(`${environment.host}/single-chat-connection`, {
             headers: new HttpHeaders({
               Authorization: `Bearer ${result.token}`,
             }),

@@ -28,6 +28,7 @@ import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { UserService } from '../../services/user.service';
+import { environment } from '../../../environments/environment.prod';
 
 @Component({
   selector: 'app-sign-in',
@@ -221,7 +222,7 @@ export class SignInComponent implements OnInit {
   ): Observable<ValidationErrors | null> {
     return this.http
       .get<{ message: string; code: number }>(
-        `http://localhost:3000/email-check?email=${control.value}`
+        `${environment.host}/email-check?email=${control.value}`
       )
       .pipe(
         map((result) => {
