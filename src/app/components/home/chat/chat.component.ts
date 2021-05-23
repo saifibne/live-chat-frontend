@@ -68,6 +68,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   searchSubscriber!: Subscription;
   userSubject!: Subscription;
   chatConnectionSubscription!: Subscription;
+  userDataSubscription!: Subscription;
   latestChatConnectionSubscription!: Subscription;
   paramSubscription!: Subscription;
   @ViewChild('popupWrapper') popupWrapper!: ElementRef;
@@ -94,6 +95,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showEmptySpace = result;
       this.cd.detectChanges();
     });
+    this.getUserData();
     this.paramSubscription = this.route.params
       .pipe(
         switchMap((params) => {
@@ -109,7 +111,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
             }
             this.headingText = 'Friends';
             this.showEmail = true;
-            this.getUserData();
             this.showLoadingChats = true;
             return this.userService.getFriendsList();
           } else {
@@ -118,7 +119,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
             this.currentConnection();
             this.headingText = 'chats';
             this.showEmail = false;
-            this.getUserData();
             this.showLoadingChats = true;
             return this.userService.chatConnections();
           }
@@ -241,17 +241,14 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   private getUserData() {
     this.userService.showProgressBar.next(true);
-    this.userService
-      .userData()
-      .pipe(take(1))
-      .subscribe(
-        () => {
-          this.userService.showProgressBar.next(false);
-        },
-        () => {
-          return this.router.navigate(['/log-in']);
-        }
-      );
+    this.userDataSubscription = this.userService.userData().subscribe(
+      () => {
+        this.userService.showProgressBar.next(false);
+      },
+      () => {
+        return this.router.navigate(['/log-in']);
+      }
+    );
   }
   onSearch() {
     this.searchText.next(this.popSearchText);
@@ -434,5 +431,8 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
       this.latestChatConnectionSubscription.unsubscribe();
     }
     this.paramSubscription.unsubscribe();
+    if (this.userDataSubscription) {
+      this.userDataSubscription.unsubscribe();
+    }
   }
 }

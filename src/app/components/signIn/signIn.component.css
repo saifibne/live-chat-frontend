@@ -29,6 +29,35 @@
   padding: 6px 15px;
   border-radius: 6px;
 }
+.sign-fail {
+  background-color: #ffe4e2;
+  border: 1px solid #ce3e44;
+  box-shadow: 0 0 5px rgba(206, 62, 68, 0.5);
+}
+.check-icon {
+  margin-right: 8px;
+}
+.log-in__box {
+  display: flex;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  align-items: center;
+}
+.log-in__text {
+  font-size: 13px;
+  color: #495057;
+}
+.log-in__anchor {
+  font-size: 12px;
+  padding: 5px 10px;
+  background-color: #665dfe;
+  color: white;
+  border-radius: 4px;
+  margin-left: 6px;
+  cursor: pointer;
+  text-decoration: none;
+}
 .sign-in__title {
   font-size: 2.5rem;
   font-weight: 700;

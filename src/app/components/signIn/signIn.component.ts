@@ -58,6 +58,7 @@ export class SignInComponent implements OnInit {
   @ViewChild('emailWarning') emailWarning!: ElementRef;
   @ViewChild('passwordWarning') passwordWarning!: ElementRef;
   @ViewChild('signUpNotification') signUpNotification!: ElementRef;
+  @ViewChild('imageError') imageError!: ElementRef;
   constructor(
     private renderer: Renderer2,
     private authService: SocialAuthService,
@@ -295,6 +296,19 @@ export class SignInComponent implements OnInit {
       form.append('imageUrl', this.imageUrl);
     } else if (this.imageFile) {
       form.append('image', this.imageFile);
+    }
+    if (!this.imageFile && !this.imageUrl) {
+      this.renderer.addClass(
+        this.imageError.nativeElement,
+        'show-sign__success'
+      );
+      setTimeout(() => {
+        this.renderer.removeClass(
+          this.imageError.nativeElement,
+          'show-sign__success'
+        );
+      }, 2000);
+      return;
     }
     this.userService.signUp(form).subscribe(() => {
       this.renderer.addClass(

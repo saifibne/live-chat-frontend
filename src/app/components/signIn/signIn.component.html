@@ -1,9 +1,19 @@
 <div class="sign-in__wrapper">
   <div class="sign-success" #signUpNotification>
     <div class="sign-success__text">
-      <span><fa-icon [icon]="checkIcon" class="check-icon"></fa-icon></span>
+      <span><fa-icon [icon]="checkIcon"></fa-icon></span>
       User signed up successful, redirecting to login page..
     </div>
+  </div>
+  <div class="sign-success" #imageError>
+    <div class="sign-success__text sign-fail">
+      <span><fa-icon [icon]="infoIcon" class="check-icon"></fa-icon></span>
+      Please provide an image for the profile picture..
+    </div>
+  </div>
+  <div class="log-in__box">
+    <div class="log-in__text">Already have an account?</div>
+    <a class="log-in__anchor" routerLink="/log-in">Login</a>
   </div>
   <div class="sign-in__box">
     <div class="sign-in__title">Sign up</div>
