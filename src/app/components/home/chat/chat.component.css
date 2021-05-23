@@ -533,6 +533,6 @@
     left: calc(100% - 20px);
   }
 }
-::ng-deep .mat-progress-spinner circle {
+:host ::ng-deep .mat-progress-spinner circle {
   stroke: #665dfe;
 }

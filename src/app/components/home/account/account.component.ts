@@ -1,6 +1,7 @@
 import {
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   Renderer2,
   ViewChild,
@@ -10,54 +11,58 @@ import * as moment from 'moment';
 
 import { UserService } from '../../../services/user.service';
 import { UserInterface } from '../../../model/user.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-account',
   templateUrl: './account.component.html',
   styleUrls: ['./account.component.css'],
 })
-export class AccountComponent implements OnInit {
+export class AccountComponent implements OnInit, OnDestroy {
   user!: UserInterface;
   form!: FormGroup;
   showPasswordError = false;
   showLoading = false;
+  ownerDetailsSubscription!: Subscription;
   @ViewChild('errorPassword') errorPassword!: ElementRef;
   @ViewChild('successPassword') successPassword!: ElementRef;
   constructor(private userService: UserService, private renderer: Renderer2) {}
   ngOnInit() {
     this.userService.showProgressBar.next(true);
-    this.userService.getOwnerDetails().subscribe((result) => {
-      if (result) {
-        this.userService.showProgressBar.next(false);
-        this.user = result.userDetails;
-        this.form = new FormGroup({
-          firstName: new FormControl(result.userDetails.name.split(' ')[0]),
-          lastName: new FormControl(
-            result.userDetails.name.split(' ').slice(1).join(' ')
-          ),
-          phoneNo: new FormControl(
-            result.userDetails.phoneNo ? result.userDetails.phoneNo : null,
-            [
-              Validators.pattern('[0-9]*'),
-              Validators.minLength(10),
-              Validators.maxLength(10),
-            ]
-          ),
-          birthDate: new FormControl(
-            result.userDetails.birthDate
-              ? moment(new Date(result.userDetails.birthDate))
-              : null
-          ),
-          email: new FormControl(result.userDetails.email, [
-            Validators.required,
-            Validators.email,
-          ]),
-          address: new FormControl(
-            result.userDetails.address ? result.userDetails.address : null
-          ),
-        });
-      }
-    });
+    this.ownerDetailsSubscription = this.userService
+      .getOwnerDetails()
+      .subscribe((result) => {
+        if (result) {
+          this.userService.showProgressBar.next(false);
+          this.user = result.userDetails;
+          this.form = new FormGroup({
+            firstName: new FormControl(result.userDetails.name.split(' ')[0]),
+            lastName: new FormControl(
+              result.userDetails.name.split(' ').slice(1).join(' ')
+            ),
+            phoneNo: new FormControl(
+              result.userDetails.phoneNo ? result.userDetails.phoneNo : null,
+              [
+                Validators.pattern('[0-9]*'),
+                Validators.minLength(10),
+                Validators.maxLength(10),
+              ]
+            ),
+            birthDate: new FormControl(
+              result.userDetails.birthDate
+                ? moment(new Date(result.userDetails.birthDate))
+                : null
+            ),
+            email: new FormControl(result.userDetails.email, [
+              Validators.required,
+              Validators.email,
+            ]),
+            address: new FormControl(
+              result.userDetails.address ? result.userDetails.address : null
+            ),
+          });
+        }
+      });
   }
   onSubmit() {
     const firstName = this.form.get('firstName')?.value;
@@ -128,5 +133,8 @@ export class AccountComponent implements OnInit {
   }
   onLogOut() {
     return this.userService.logOut();
+  }
+  ngOnDestroy() {
+    this.ownerDetailsSubscription.unsubscribe();
   }
 }

@@ -241,14 +241,17 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   private getUserData() {
     this.userService.showProgressBar.next(true);
-    this.userService.userData().subscribe(
-      () => {
-        this.userService.showProgressBar.next(false);
-      },
-      () => {
-        return this.router.navigate(['/log-in']);
-      }
-    );
+    this.userService
+      .userData()
+      .pipe(take(1))
+      .subscribe(
+        () => {
+          this.userService.showProgressBar.next(false);
+        },
+        () => {
+          return this.router.navigate(['/log-in']);
+        }
+      );
   }
   onSearch() {
     this.searchText.next(this.popSearchText);
@@ -357,26 +360,32 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
   clickAccept(userId: string) {
-    this.userService.acceptFriendRequest(userId).subscribe(
-      () => {
-        this.closeFriendRequests();
-        this.getUserData();
-      },
-      () => {
-        return this.router.navigate(['/log-in']);
-      }
-    );
+    this.userService
+      .acceptFriendRequest(userId)
+      .pipe(take(1))
+      .subscribe(
+        () => {
+          this.closeFriendRequests();
+          this.getUserData();
+        },
+        () => {
+          return this.router.navigate(['/log-in']);
+        }
+      );
   }
   clickReject(userId: string) {
-    this.userService.rejectFriendRequest(userId).subscribe(
-      () => {
-        this.closeFriendRequests();
-        this.getUserData();
-      },
-      () => {
-        return this.router.navigate(['/log-in']);
-      }
-    );
+    this.userService
+      .rejectFriendRequest(userId)
+      .pipe(take(1))
+      .subscribe(
+        () => {
+          this.closeFriendRequests();
+          this.getUserData();
+        },
+        () => {
+          return this.router.navigate(['/log-in']);
+        }
+      );
   }
   openNotificationPanel() {
     this.renderer.setStyle(
@@ -402,15 +411,18 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
   clearNotifications() {
-    this.userService.clearNotifications().subscribe(
-      () => {
-        this.closeNotificationPanel();
-        this.getUserData();
-      },
-      () => {
-        return this.router.navigate(['/log-in']);
-      }
-    );
+    this.userService
+      .clearNotifications()
+      .pipe(take(1))
+      .subscribe(
+        () => {
+          this.closeNotificationPanel();
+          this.getUserData();
+        },
+        () => {
+          return this.router.navigate(['/log-in']);
+        }
+      );
   }
   ngOnDestroy() {
     this.searchSubscriber.unsubscribe();

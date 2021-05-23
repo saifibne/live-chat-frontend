@@ -145,6 +145,6 @@ input.ng-invalid.ng-touched {
 .progress-spinner {
   margin: 0 auto;
 }
-::ng-deep .mat-progress-spinner circle {
+:host ::ng-deep .mat-progress-spinner circle {
   stroke: white;
 }

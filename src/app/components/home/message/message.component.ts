@@ -15,7 +15,7 @@ import { of, Subscription } from 'rxjs';
 import { ChatService } from '../../../services/chat.service';
 import { UserService } from '../../../services/user.service';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { environment } from '../../../../environments/environment.prod';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-message',
@@ -26,7 +26,6 @@ export class MessageComponent implements OnInit, OnDestroy {
   plusIcon = faPlus;
   groupId: string = '';
   socketEventName!: string;
-  showLoadMore = false;
   prevScrollHeight!: number;
   showLoadingChats!: boolean;
   page!: number;
@@ -72,7 +71,6 @@ export class MessageComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    console.log('message component running');
     this.chatService.showEmptySpace.next(false);
     this.paramSubscription = this.route.queryParams
       .pipe(

@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { io, Socket } from 'socket.io-client';
 
 import { ChatConnectionModel } from '../model/chat.model';
-import { environment } from '../../environments/environment.prod';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {

@@ -228,6 +228,6 @@
 .show-error {
   transform: translateX(0);
 }
-::ng-deep .mat-progress-spinner circle {
+:host ::ng-deep .mat-progress-spinner circle {
   stroke: white;
 }
