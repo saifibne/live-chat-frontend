@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, take } from 'rxjs/operators';
 
 import { UserService } from '../../../services/user.service';
 import { UserInterface } from '../../../model/user.model';
@@ -44,6 +44,7 @@ export class FriendComponent implements OnInit {
   getChatConnection(friendId: string) {
     this.chatService
       .getParticularChatConnection(friendId)
+      .pipe(take(1))
       .subscribe((result) => {
         if (result) {
           this.router

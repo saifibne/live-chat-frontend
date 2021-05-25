@@ -30,6 +30,7 @@ export class MessageComponent implements OnInit, OnDestroy {
   showLoadingChats!: boolean;
   page!: number;
   notificationCounter!: number;
+  currentChatSubscription!: Subscription;
   observer!: IntersectionObserver;
   resetCounterObserver!: IntersectionObserver;
   userDetails!:
@@ -170,7 +171,7 @@ export class MessageComponent implements OnInit, OnDestroy {
       );
   }
   private currentChatConnection(friendId: string) {
-    this.userService.userToken
+    this.currentChatSubscription = this.userService.userToken
       .pipe(
         exhaustMap((result) => {
           if (result) {
@@ -220,16 +221,19 @@ export class MessageComponent implements OnInit, OnDestroy {
     this.resetCounterObserver.observe(element);
   }
   sendMessage(message: string) {
-    this.chatService.addMessage(message, this.groupId).subscribe(
-      (result) => {
-        if (result) {
-          this.scrollToBottom();
+    this.chatService
+      .addMessage(message, this.groupId)
+      .pipe(take(1))
+      .subscribe(
+        (result) => {
+          if (result) {
+            this.scrollToBottom();
+          }
+        },
+        () => {
+          return this.router.navigate(['/log-in']);
         }
-      },
-      () => {
-        return this.router.navigate(['/log-in']);
-      }
-    );
+      );
   }
   private handleSocketChatData(data: {
     text: string;
@@ -283,17 +287,20 @@ export class MessageComponent implements OnInit, OnDestroy {
     });
   }
   getMoreChats() {
-    this.chatService.getMoreChats(this.groupId, this.page).subscribe(
-      (result) => {
-        if (result) {
-          this.pushToChats(result.chats);
+    this.chatService
+      .getMoreChats(this.groupId, this.page)
+      .pipe(take(1))
+      .subscribe(
+        (result) => {
+          if (result) {
+            this.pushToChats(result.chats);
+          }
+          this.page += 1;
+        },
+        () => {
+          return this.router.navigate(['/log-in']);
         }
-        this.page += 1;
-      },
-      () => {
-        return this.router.navigate(['/log-in']);
-      }
-    );
+      );
   }
 
   pushToChats(
@@ -343,5 +350,8 @@ export class MessageComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.chatService.showEmptySpace.next(true);
     this.paramSubscription.unsubscribe();
+    if (this.currentChatSubscription) {
+      this.currentChatSubscription.unsubscribe();
+    }
   }
 }

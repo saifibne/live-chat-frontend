@@ -71,6 +71,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   userDataSubscription!: Subscription;
   latestChatConnectionSubscription!: Subscription;
   paramSubscription!: Subscription;
+  emptySpaceSubscription!: Subscription;
   @ViewChild('popupWrapper') popupWrapper!: ElementRef;
   @ViewChild('searchWrapper') searchWrapper!: ElementRef;
   @ViewChild('dropDown') dropDown!: ElementRef;
@@ -91,10 +92,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     private cd: ChangeDetectorRef
   ) {}
   ngOnInit() {
-    this.chatService.showEmptySpace.subscribe((result) => {
-      this.showEmptySpace = result;
-      this.cd.detectChanges();
-    });
     this.getUserData();
     this.paramSubscription = this.route.params
       .pipe(
@@ -103,7 +100,10 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
           this.particularConnection = undefined;
           this.chatConnections = undefined;
           this.friends = undefined;
-          this.showEmptySpace = true;
+          this.showEmptySpace = !(
+            this.route.snapshot.queryParams['chatId'] ||
+            this.route.snapshot.queryParams['friendId']
+          );
           if (params['linkName'] === 'friends') {
             this.params = 'friends';
             if (this.chatConnectionSubscription) {
@@ -177,6 +177,12 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
           return this.router.navigate(['/log-in']);
         }
       );
+    this.emptySpaceSubscription = this.chatService.showEmptySpace.subscribe(
+      (result) => {
+        this.showEmptySpace = result;
+        this.cd.detectChanges();
+      }
+    );
     this.userSubject = this.userService.userDataSubject.subscribe((result) => {
       this.notifications = result.notifications;
       this.pendingRequest = result.pendingRequests;
@@ -434,5 +440,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.userDataSubscription) {
       this.userDataSubscription.unsubscribe();
     }
+    this.emptySpaceSubscription.unsubscribe();
   }
 }
