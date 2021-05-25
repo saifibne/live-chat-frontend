@@ -30,7 +30,6 @@ export class MessageComponent implements OnInit, OnDestroy {
   showLoadingChats!: boolean;
   page!: number;
   notificationCounter!: number;
-  currentChatSubscription!: Subscription;
   observer!: IntersectionObserver;
   resetCounterObserver!: IntersectionObserver;
   userDetails!:
@@ -171,8 +170,9 @@ export class MessageComponent implements OnInit, OnDestroy {
       );
   }
   private currentChatConnection(friendId: string) {
-    this.currentChatSubscription = this.userService.userToken
+    this.userService.userToken
       .pipe(
+        take(1),
         exhaustMap((result) => {
           if (result) {
             return this.http.get<{
@@ -350,8 +350,5 @@ export class MessageComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.chatService.showEmptySpace.next(true);
     this.paramSubscription.unsubscribe();
-    if (this.currentChatSubscription) {
-      this.currentChatSubscription.unsubscribe();
-    }
   }
 }
