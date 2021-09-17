@@ -16,15 +16,15 @@ export class UserService {
     token: string;
     userId: string;
   } | null>(null);
-  userDataSubject = new Subject<{
-    name: string;
-    pictureUrl: string;
-    notifications: [{ message: string; imageUrl: string }];
-    pendingRequests: [
-      { userId: { _id: string; name: string; pictureUrl: string } }
-    ];
-  }>();
-  showProgressBar = new Subject<boolean>();
+  // userDataSubject = new Subject<{
+  //   name: string;
+  //   pictureUrl: string;
+  //   notifications: [{ message: string; imageUrl: string }];
+  //   pendingRequests: [
+  //     { userId: { _id: string; name: string; pictureUrl: string } }
+  //   ];
+  // }>();
+  // showProgressBar = new Subject<boolean>();
   socket!: Socket;
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -131,41 +131,41 @@ export class UserService {
       })
     );
   }
-  userData() {
-    return this.userToken.pipe(
-      exhaustMap((result) => {
-        if (result) {
-          return this.http
-            .get<{
-              message: string;
-              name: string;
-              pictureUrl: string;
-              notifications: [{ message: string; imageUrl: string }];
-              pendingRequests: [
-                { userId: { _id: string; name: string; pictureUrl: string } }
-              ];
-              code: number;
-            }>(`${environment.host}/user-data`, {
-              headers: new HttpHeaders({
-                Authorization: `Bearer ${result.token}`,
-              }),
-            })
-            .pipe(
-              tap((result) => {
-                this.userDataSubject.next({
-                  name: result.name,
-                  pictureUrl: result.pictureUrl,
-                  notifications: result.notifications,
-                  pendingRequests: result.pendingRequests,
-                });
-              })
-            );
-        } else {
-          return of(null);
-        }
-      })
-    );
-  }
+  // userData() {
+  //   return this.userToken.pipe(
+  //     exhaustMap((result) => {
+  //       if (result) {
+  //         return this.http
+  //           .get<{
+  //             message: string;
+  //             name: string;
+  //             pictureUrl: string;
+  //             notifications: [{ message: string; imageUrl: string }];
+  //             pendingRequests: [
+  //               { userId: { _id: string; name: string; pictureUrl: string } }
+  //             ];
+  //             code: number;
+  //           }>(`${environment.host}/user-data`, {
+  //             headers: new HttpHeaders({
+  //               Authorization: `Bearer ${result.token}`,
+  //             }),
+  //           })
+  //           .pipe(
+  //             tap((result) => {
+  //               this.userDataSubject.next({
+  //                 name: result.name,
+  //                 pictureUrl: result.pictureUrl,
+  //                 notifications: result.notifications,
+  //                 pendingRequests: result.pendingRequests,
+  //               });
+  //             })
+  //           );
+  //       } else {
+  //         return of(null);
+  //       }
+  //     })
+  //   );
+  // }
   acceptFriendRequest(userId: string) {
     return this.userToken.pipe(
       exhaustMap((result) => {
@@ -252,24 +252,24 @@ export class UserService {
       }
     );
   }
-  getOwnerDetails() {
-    return this.userToken.pipe(
-      exhaustMap((result) => {
-        if (result) {
-          return this.http.get<{ message: string; userDetails: UserInterface }>(
-            `${environment.host}/account-details`,
-            {
-              headers: new HttpHeaders({
-                Authorization: `Bearer ${result.token}`,
-              }),
-            }
-          );
-        } else {
-          return of(null);
-        }
-      })
-    );
-  }
+  // getOwnerDetails() {
+  //   return this.userToken.pipe(
+  //     exhaustMap((result) => {
+  //       if (result) {
+  //         return this.http.get<{ message: string; userDetails: UserInterface }>(
+  //           `${environment.host}/account-details`,
+  //           {
+  //             headers: new HttpHeaders({
+  //               Authorization: `Bearer ${result.token}`,
+  //             }),
+  //           }
+  //         );
+  //       } else {
+  //         return of(null);
+  //       }
+  //     })
+  //   );
+  // }
   changeUserData(
     userId: string,
     firstName: string,

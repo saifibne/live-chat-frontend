@@ -28,6 +28,9 @@ import { UserService } from '../../../services/user.service';
 import { FriendListInterface, SearchUser } from '../../../model/user.model';
 import { ChatConnectionModel } from '../../../model/chat.model';
 import { ChatService } from '../../../services/chat.service';
+import { Store } from '@ngrx/store';
+import { AppStateInterface } from '../../../store/store.reducer';
+import * as userActions from '../../../store/userStore/userStore.action';
 
 @Component({
   selector: 'app-chat',
@@ -89,7 +92,8 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     private renderer: Renderer2,
     private chatService: ChatService,
     private router: Router,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private store: Store<AppStateInterface>
   ) {}
   ngOnInit() {
     this.getUserData();
@@ -133,11 +137,14 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
             } else if (+result.code === 1224) {
               this.showLoadingChats = false;
               if (this.existingConnection) {
-                const existingConnectionIndex = result.chatConnections.findIndex(
-                  (eachConnection: { _id: string }) => {
-                    return eachConnection._id === this.existingConnection?._id;
-                  }
-                );
+                const existingConnectionIndex =
+                  result.chatConnections.findIndex(
+                    (eachConnection: { _id: string }) => {
+                      return (
+                        eachConnection._id === this.existingConnection?._id
+                      );
+                    }
+                  );
                 if (existingConnectionIndex !== -1) {
                   const newChatConnections = [...result.chatConnections];
                   newChatConnections.splice(existingConnectionIndex, 1);
@@ -152,13 +159,14 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
                   ];
                 }
               } else if (this.particularConnection) {
-                const existingConnectionIndex = result.chatConnections.findIndex(
-                  (eachConnection: { _id: string }) => {
-                    return (
-                      eachConnection._id === this.particularConnection?._id
-                    );
-                  }
-                );
+                const existingConnectionIndex =
+                  result.chatConnections.findIndex(
+                    (eachConnection: { _id: string }) => {
+                      return (
+                        eachConnection._id === this.particularConnection?._id
+                      );
+                    }
+                  );
                 if (existingConnectionIndex === -1) {
                   this.chatConnections = [
                     this.particularConnection,
@@ -183,11 +191,23 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
         this.cd.detectChanges();
       }
     );
-    this.userSubject = this.userService.userDataSubject.subscribe((result) => {
-      this.notifications = result.notifications;
-      this.pendingRequest = result.pendingRequests;
-      this.userDetails = { name: result.name, pictureUrl: result.pictureUrl };
-    });
+    // this.userSubject = this.userService.userDataSubject.subscribe((result) => {
+    //   this.notifications = result.notifications;
+    //   this.pendingRequest = result.pendingRequests;
+    //   this.userDetails = { name: result.name, pictureUrl: result.pictureUrl };
+    // });
+    this.userDataSubscription = this.store
+      .select('userDetails')
+      .subscribe((data) => {
+        if (data.persistUserData) {
+          this.notifications = data.persistUserData.notifications;
+          this.pendingRequest = data.persistUserData.pendingRequests;
+          this.userDetails = {
+            name: data.persistUserData.name,
+            pictureUrl: data.persistUserData.pictureUrl,
+          };
+        }
+      });
     this.searchSubscriber = this.searchText
       .pipe(
         debounceTime(500),
@@ -216,18 +236,19 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private latestChatConnection() {
-    this.chatConnectionSubscription = this.chatService.latestChatConnection.subscribe(
-      (result) => {
-        this.existingConnection = result;
-      },
-      () => {
-        return this.router.navigate(['/log-in']);
-      }
-    );
+    this.chatConnectionSubscription =
+      this.chatService.latestChatConnection.subscribe(
+        (result) => {
+          this.existingConnection = result;
+        },
+        () => {
+          return this.router.navigate(['/log-in']);
+        }
+      );
   }
   private currentConnection() {
-    this.latestChatConnectionSubscription = this.chatService.currentChatConnection.subscribe(
-      (result) => {
+    this.latestChatConnectionSubscription =
+      this.chatService.currentChatConnection.subscribe((result) => {
         this.particularConnection = result;
         if (this.chatConnections) {
           const existingConnectionIndex = this.chatConnections.findIndex(
@@ -242,19 +263,19 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
             ];
           }
         }
-      }
-    );
+      });
   }
   private getUserData() {
-    this.userService.showProgressBar.next(true);
-    this.userDataSubscription = this.userService.userData().subscribe(
-      () => {
-        this.userService.showProgressBar.next(false);
-      },
-      () => {
-        return this.router.navigate(['/log-in']);
-      }
-    );
+    // this.userService.showProgressBar.next(true);
+    // this.userDataSubscription = this.userService.userData().subscribe(
+    //   () => {
+    //     this.userService.showProgressBar.next(false);
+    //   },
+    //   () => {
+    //     return this.router.navigate(['/log-in']);
+    //   }
+    // );
+    this.store.dispatch(userActions.startPersistUserData());
   }
   onSearch() {
     this.searchText.next(this.popSearchText);
@@ -429,7 +450,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnDestroy() {
     this.searchSubscriber.unsubscribe();
-    this.userSubject.unsubscribe();
+    // this.userSubject.unsubscribe();
     if (this.chatConnectionSubscription) {
       this.chatConnectionSubscription.unsubscribe();
     }

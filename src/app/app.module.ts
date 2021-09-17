@@ -6,6 +6,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
 
 import { AppComponent } from './app.component';
 import { RoutingModule } from './routing.module';
@@ -17,6 +19,8 @@ import { ArrayFriendPipe } from './pipes/arrayFriend.pipe';
 import { LoadingComponent } from './components/loading/loading.component';
 import { FriendComponent } from './components/home/friends/friend.component';
 import { MessageComponent } from './components/home/message/message.component';
+import { appState } from './store/store.reducer';
+import { UserStoreEffect } from './store/userStore/userStore.effects';
 
 @NgModule({
   declarations: [
@@ -35,6 +39,8 @@ import { MessageComponent } from './components/home/message/message.component';
     FontAwesomeModule,
     HttpClientModule,
     RoutingModule,
+    StoreModule.forRoot(appState),
+    EffectsModule.forRoot([UserStoreEffect]),
     FormsModule,
     BrowserAnimationsModule,
     MatProgressBarModule,

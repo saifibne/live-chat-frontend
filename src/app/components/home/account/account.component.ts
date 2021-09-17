@@ -8,10 +8,13 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import * as moment from 'moment';
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
 
 import { UserService } from '../../../services/user.service';
 import { UserInterface } from '../../../model/user.model';
-import { Subscription } from 'rxjs';
+import { AppStateInterface } from '../../../store/store.reducer';
+import * as userActions from '../../../store/userStore/userStore.action';
 
 @Component({
   selector: 'app-account',
@@ -26,22 +29,26 @@ export class AccountComponent implements OnInit, OnDestroy {
   ownerDetailsSubscription!: Subscription;
   @ViewChild('errorPassword') errorPassword!: ElementRef;
   @ViewChild('successPassword') successPassword!: ElementRef;
-  constructor(private userService: UserService, private renderer: Renderer2) {}
+  constructor(
+    private userService: UserService,
+    private renderer: Renderer2,
+    private store: Store<AppStateInterface>
+  ) {}
   ngOnInit() {
-    this.userService.showProgressBar.next(true);
-    this.ownerDetailsSubscription = this.userService
-      .getOwnerDetails()
-      .subscribe((result) => {
-        if (result) {
-          this.userService.showProgressBar.next(false);
-          this.user = result.userDetails;
+    // this.userService.showProgressBar.next(true);
+    this.store.dispatch(userActions.startGettingUser());
+    this.ownerDetailsSubscription = this.store
+      .select('userDetails')
+      .subscribe((data) => {
+        if (data.user) {
+          this.user = data.user;
           this.form = new FormGroup({
-            firstName: new FormControl(result.userDetails.name.split(' ')[0]),
+            firstName: new FormControl(data.user.name.split(' ')[0]),
             lastName: new FormControl(
-              result.userDetails.name.split(' ').slice(1).join(' ')
+              data.user.name.split(' ').slice(1).join(' ')
             ),
             phoneNo: new FormControl(
-              result.userDetails.phoneNo ? result.userDetails.phoneNo : null,
+              data.user.phoneNo ? data.user.phoneNo : null,
               [
                 Validators.pattern('[0-9]*'),
                 Validators.minLength(10),
@@ -49,20 +56,52 @@ export class AccountComponent implements OnInit, OnDestroy {
               ]
             ),
             birthDate: new FormControl(
-              result.userDetails.birthDate
-                ? moment(new Date(result.userDetails.birthDate))
-                : null
+              data.user.birthDate ? moment(new Date(data.user.birthDate)) : null
             ),
-            email: new FormControl(result.userDetails.email, [
+            email: new FormControl(data.user.email, [
               Validators.required,
               Validators.email,
             ]),
             address: new FormControl(
-              result.userDetails.address ? result.userDetails.address : null
+              data.user.address ? data.user.address : null
             ),
           });
         }
       });
+    // this.ownerDetailsSubscription = this.userService
+    //   .getOwnerDetails()
+    //   .subscribe((result) => {
+    //     if (result) {
+    //       this.userService.showProgressBar.next(false);
+    //       this.user = result.userDetails;
+    //       this.form = new FormGroup({
+    //         firstName: new FormControl(result.userDetails.name.split(' ')[0]),
+    //         lastName: new FormControl(
+    //           result.userDetails.name.split(' ').slice(1).join(' ')
+    //         ),
+    //         phoneNo: new FormControl(
+    //           result.userDetails.phoneNo ? result.userDetails.phoneNo : null,
+    //           [
+    //             Validators.pattern('[0-9]*'),
+    //             Validators.minLength(10),
+    //             Validators.maxLength(10),
+    //           ]
+    //         ),
+    //         birthDate: new FormControl(
+    //           result.userDetails.birthDate
+    //             ? moment(new Date(result.userDetails.birthDate))
+    //             : null
+    //         ),
+    //         email: new FormControl(result.userDetails.email, [
+    //           Validators.required,
+    //           Validators.email,
+    //         ]),
+    //         address: new FormControl(
+    //           result.userDetails.address ? result.userDetails.address : null
+    //         ),
+    //       });
+    //     }
+    //   });
   }
   onSubmit() {
     const firstName = this.form.get('firstName')?.value;
