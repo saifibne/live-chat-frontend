@@ -33,7 +33,7 @@ const initialState: State = {
   persistUserData: undefined,
 };
 
-const userDetailsReducer = createReducer(
+const userStoreReducer = createReducer(
   initialState,
   on(userActions.startGettingUser, (state, payload) => ({
     ...state,
@@ -85,5 +85,5 @@ const userDetailsReducer = createReducer(
 );
 
 export function reducer(state: State | undefined, action: Action) {
-  return userDetailsReducer(state, action);
+  return userStoreReducer(state, action);
 }

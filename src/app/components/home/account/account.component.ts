@@ -109,7 +109,7 @@ export class AccountComponent implements OnInit, OnDestroy {
     const phoneNo = this.form.get('phoneNo')?.value;
     const address = this.form.get('address')?.value;
     const email = this.form.get('email')?.value;
-    const birthDate = this.form.get('birthDate')?.value.toDate();
+    const birthDate = this.form.get('birthDate')?.value?.toDate();
     this.showLoading = true;
     this.userService
       .changeUserData(

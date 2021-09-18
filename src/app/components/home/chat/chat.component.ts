@@ -8,7 +8,7 @@ import {
   Renderer2,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { of, Subject, Subscription } from 'rxjs';
 import {
   debounceTime,
@@ -31,6 +31,7 @@ import { ChatService } from '../../../services/chat.service';
 import { Store } from '@ngrx/store';
 import { AppStateInterface } from '../../../store/store.reducer';
 import * as userActions from '../../../store/userStore/userStore.action';
+import * as chatActions from '../../../store/chatStore/chatStore.action';
 
 @Component({
   selector: 'app-chat',
@@ -97,94 +98,139 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
   ngOnInit() {
     this.getUserData();
-    this.paramSubscription = this.route.params
-      .pipe(
-        switchMap((params) => {
-          this.existingConnection = undefined;
-          this.particularConnection = undefined;
-          this.chatConnections = undefined;
-          this.friends = undefined;
-          this.showEmptySpace = !(
-            this.route.snapshot.queryParams['chatId'] ||
-            this.route.snapshot.queryParams['friendId']
-          );
-          if (params['linkName'] === 'friends') {
-            this.params = 'friends';
-            if (this.chatConnectionSubscription) {
-              this.chatConnectionSubscription.unsubscribe();
-            }
-            this.headingText = 'Friends';
-            this.showEmail = true;
-            this.showLoadingChats = true;
-            return this.userService.getFriendsList();
-          } else {
-            this.params = 'chats';
-            this.latestChatConnection();
-            this.currentConnection();
-            this.headingText = 'chats';
-            this.showEmail = false;
-            this.showLoadingChats = true;
-            return this.userService.chatConnections();
-          }
-        })
-      )
-      .subscribe(
-        (result: any) => {
-          if (result) {
-            if (+result.code === 1223) {
-              this.showLoadingChats = false;
-              this.friends = result.friends;
-            } else if (+result.code === 1224) {
-              this.showLoadingChats = false;
-              if (this.existingConnection) {
-                const existingConnectionIndex =
-                  result.chatConnections.findIndex(
-                    (eachConnection: { _id: string }) => {
-                      return (
-                        eachConnection._id === this.existingConnection?._id
-                      );
-                    }
-                  );
-                if (existingConnectionIndex !== -1) {
-                  const newChatConnections = [...result.chatConnections];
-                  newChatConnections.splice(existingConnectionIndex, 1);
-                  this.chatConnections = [
-                    this.existingConnection,
-                    ...newChatConnections,
-                  ];
-                } else {
-                  this.chatConnections = [
-                    this.existingConnection,
-                    ...result.chatConnections,
-                  ];
-                }
-              } else if (this.particularConnection) {
-                const existingConnectionIndex =
-                  result.chatConnections.findIndex(
-                    (eachConnection: { _id: string }) => {
-                      return (
-                        eachConnection._id === this.particularConnection?._id
-                      );
-                    }
-                  );
-                if (existingConnectionIndex === -1) {
-                  this.chatConnections = [
-                    this.particularConnection,
-                    ...result.chatConnections,
-                  ];
-                } else {
-                  this.chatConnections = result.chatConnections;
-                }
-              } else {
-                this.chatConnections = result.chatConnections;
-              }
-            }
-          }
-        },
-        () => {
-          return this.router.navigate(['/log-in']);
+    // this.paramSubscription = this.route.params
+    //   .pipe(
+    //     switchMap((params) => {
+    //       this.existingConnection = undefined;
+    //       this.particularConnection = undefined;
+    //       this.chatConnections = undefined;
+    //       this.friends = undefined;
+    //       this.showEmptySpace = !(
+    //         this.route.snapshot.queryParams['chatId'] ||
+    //         this.route.snapshot.queryParams['friendId']
+    //       );
+    //       if (params['linkName'] === 'friends') {
+    //         this.params = 'friends';
+    //         if (this.chatConnectionSubscription) {
+    //           this.chatConnectionSubscription.unsubscribe();
+    //         }
+    //         this.headingText = 'Friends';
+    //         this.showEmail = true;
+    //         this.showLoadingChats = true;
+    //         return this.userService.getFriendsList();
+    //       } else {
+    //         this.params = 'chats';
+    //         this.latestChatConnection();
+    //         this.currentConnection();
+    //         this.headingText = 'chats';
+    //         this.showEmail = false;
+    //         this.showLoadingChats = true;
+    //         return this.userService.chatConnections();
+    //       }
+    //     })
+    //   )
+    //   .subscribe(
+    //     (result: any) => {
+    //       if (result) {
+    //         if (+result.code === 1223) {
+    //           this.showLoadingChats = false;
+    //           this.friends = result.friends;
+    //         } else if (+result.code === 1224) {
+    //           this.showLoadingChats = false;
+    //           if (this.existingConnection) {
+    //             const existingConnectionIndex =
+    //               result.chatConnections.findIndex(
+    //                 (eachConnection: { _id: string }) => {
+    //                   return (
+    //                     eachConnection._id === this.existingConnection?._id
+    //                   );
+    //                 }
+    //               );
+    //             if (existingConnectionIndex !== -1) {
+    //               const newChatConnections = [...result.chatConnections];
+    //               newChatConnections.splice(existingConnectionIndex, 1);
+    //               this.chatConnections = [
+    //                 this.existingConnection,
+    //                 ...newChatConnections,
+    //               ];
+    //             } else {
+    //               this.chatConnections = [
+    //                 this.existingConnection,
+    //                 ...result.chatConnections,
+    //               ];
+    //             }
+    //           } else if (this.particularConnection) {
+    //             const existingConnectionIndex =
+    //               result.chatConnections.findIndex(
+    //                 (eachConnection: { _id: string }) => {
+    //                   return (
+    //                     eachConnection._id === this.particularConnection?._id
+    //                   );
+    //                 }
+    //               );
+    //             if (existingConnectionIndex === -1) {
+    //               this.chatConnections = [
+    //                 this.particularConnection,
+    //                 ...result.chatConnections,
+    //               ];
+    //             } else {
+    //               this.chatConnections = result.chatConnections;
+    //             }
+    //           } else {
+    //             this.chatConnections = result.chatConnections;
+    //           }
+    //         }
+    //       }
+    //     },
+    //     () => {
+    //       return this.router.navigate(['/log-in']);
+    //     }
+    //   );
+    this.store.select('chatStore').subscribe((data) => {
+      console.log(data);
+      if (data.currentSection && data.currentSection === 'chats') {
+        this.friends = undefined;
+        if (data.chatConnections) {
+          this.chatConnections = data.chatConnections;
         }
+      } else if (data.currentSection && data.currentSection === 'friends') {
+        this.chatConnections = undefined;
+        if (data.friends) {
+          this.friends = data.friends;
+        }
+      }
+      this.showLoadingChats = data.loadingData;
+    });
+    this.paramSubscription = this.route.params.subscribe((params: Params) => {
+      // this.existingConnection = undefined;
+      this.particularConnection = undefined;
+      // this.chatConnections = undefined;
+      // this.friends = undefined;
+      this.showEmptySpace = !(
+        this.route.snapshot.queryParams['chatId'] ||
+        this.route.snapshot.queryParams['friendId']
       );
+      if (params['linkName'] === 'friends') {
+        this.params = 'friends';
+        if (this.chatConnectionSubscription) {
+          this.chatConnectionSubscription.unsubscribe();
+        }
+        this.headingText = 'Friends';
+        this.showEmail = true;
+        // this.showLoadingChats = true;
+        // return this.userService.getFriendsList();
+        this.store.dispatch(chatActions.startGettingFriendList());
+      } else {
+        this.params = 'chats';
+        // this.latestChatConnection();
+        this.currentConnection();
+        this.headingText = 'Chats';
+        this.showEmail = false;
+        // this.showLoadingChats = true;
+        // return this.userService.chatConnections();
+        this.store.dispatch(chatActions.startGettingChats());
+      }
+    });
     this.emptySpaceSubscription = this.chatService.showEmptySpace.subscribe(
       (result) => {
         this.showEmptySpace = result;
@@ -236,15 +282,24 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private latestChatConnection() {
-    this.chatConnectionSubscription =
-      this.chatService.latestChatConnection.subscribe(
-        (result) => {
-          this.existingConnection = result;
-        },
-        () => {
-          return this.router.navigate(['/log-in']);
-        }
-      );
+    // this.chatConnectionSubscription =
+    //   this.chatService.latestChatConnection.subscribe(
+    //     (result) => {
+    //       this.existingConnection = result;
+    //     },
+    //     () => {
+    //       return this.router.navigate(['/log-in']);
+    //     }
+    //   );
+    // this.chatConnectionSubscription = this.store
+    //   .select('chatStore')
+    //   .subscribe((data) => {
+    //     console.log(data);
+    //     if (data.existingChatConnection) {
+    //       this.existingConnection = data.existingChatConnection;
+    //       this.store.dispatch(chatActions.resetLatestChatConnection());
+    //     }
+    //   });
   }
   private currentConnection() {
     this.latestChatConnectionSubscription =

@@ -21,6 +21,7 @@ import { FriendComponent } from './components/home/friends/friend.component';
 import { MessageComponent } from './components/home/message/message.component';
 import { appState } from './store/store.reducer';
 import { UserStoreEffect } from './store/userStore/userStore.effects';
+import { ChatStoreEffect } from './store/chatStore/chatStore.effect';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,7 @@ import { UserStoreEffect } from './store/userStore/userStore.effects';
     HttpClientModule,
     RoutingModule,
     StoreModule.forRoot(appState),
-    EffectsModule.forRoot([UserStoreEffect]),
+    EffectsModule.forRoot([UserStoreEffect, ChatStoreEffect]),
     FormsModule,
     BrowserAnimationsModule,
     MatProgressBarModule,
