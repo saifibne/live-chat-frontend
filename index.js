@@ -9,6 +9,9 @@ function createWindow() {
     width: 1200,
     height: 800,
     show: false,
+    webPreferences: {
+      nativeWindowOpen: true,
+    },
   });
 
   mainWindow.loadURL("http://localhost:4200");
