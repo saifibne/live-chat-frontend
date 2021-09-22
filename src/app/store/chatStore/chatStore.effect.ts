@@ -1,13 +1,15 @@
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { EMPTY, of } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 import { UserService } from '../../services/user.service';
 import { ChatConnectionModel } from '../../model/chat.model';
 import { environment } from '../../../environments/environment';
 import * as chatActions from '../chatStore/chatStore.action';
+import * as storeActions from '../store.action';
 
 @Injectable()
 export class ChatStoreEffect {
@@ -31,7 +33,11 @@ export class ChatStoreEffect {
                 .pipe(
                   map((data) =>
                     chatActions.chats({ chatConnections: data.chatConnections })
-                  )
+                  ),
+                  catchError((error) => {
+                    console.log(error);
+                    return of(storeActions.redirectLoginPage());
+                  })
                 );
             } else {
               return of(chatActions.resetChats());
@@ -70,7 +76,11 @@ export class ChatStoreEffect {
                 .pipe(
                   map((data) =>
                     chatActions.friendList({ friends: data.friends })
-                  )
+                  ),
+                  catchError((error) => {
+                    console.log(error);
+                    return of(storeActions.redirectLoginPage());
+                  })
                 );
             } else {
               return of(chatActions.resetFriendList());
@@ -81,9 +91,21 @@ export class ChatStoreEffect {
     )
   );
 
+  redirectToLoginPage$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(storeActions.redirectLoginPage),
+        tap(() => {
+          this.router.navigate(['/log-in']);
+        })
+      ),
+    { dispatch: false }
+  );
+
   constructor(
     private actions$: Actions,
     private http: HttpClient,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router
   ) {}
 }

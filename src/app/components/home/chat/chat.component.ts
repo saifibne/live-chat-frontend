@@ -187,7 +187,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     //     }
     //   );
     this.store.select('chatStore').subscribe((data) => {
-      console.log(data);
       if (data.currentSection && data.currentSection === 'chats') {
         this.friends = undefined;
         if (data.chatConnections) {

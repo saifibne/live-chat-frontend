@@ -1,13 +1,19 @@
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Injectable } from '@angular/core';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { Router } from '@angular/router';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 
 import * as userActions from './userStore.action';
-import { map, switchMap } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { UserInterface } from '../../model/user.model';
 import { environment } from '../../../environments/environment';
-import { of } from 'rxjs';
+import * as storeActions from '../store.action';
 
 @Injectable()
 export class UserStoreEffect {
@@ -38,7 +44,11 @@ export class UserStoreEffect {
                       email: userData.userDetails.email,
                       phoneNo: userData.userDetails.phoneNo,
                     })
-                  )
+                  ),
+                  catchError((error) => {
+                    console.log(error);
+                    return of(storeActions.redirectLoginPage());
+                  })
                 );
             } else {
               return of(userActions.userDetailFail());
@@ -74,14 +84,19 @@ export class UserStoreEffect {
                   }),
                 })
                 .pipe(
-                  map((userData) =>
-                    userActions.persistUserData({
+                  map((userData) => {
+                    console.log(userData);
+                    return userActions.persistUserData({
                       name: userData.name,
                       pictureUrl: userData.pictureUrl,
                       notifications: userData.notifications,
                       pendingRequests: userData.pendingRequests,
-                    })
-                  )
+                    });
+                  }),
+                  catchError((error: HttpErrorResponse) => {
+                    console.log(error);
+                    return of(storeActions.redirectLoginPage());
+                  })
                 );
             } else {
               return of(userActions.persistUserDataFail());
@@ -92,9 +107,21 @@ export class UserStoreEffect {
     )
   );
 
+  redirectToLoginPage$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(storeActions.redirectLoginPage),
+        tap(() => {
+          this.router.navigate(['/log-in']);
+        })
+      ),
+    { dispatch: false }
+  );
+
   constructor(
     private actions$: Actions,
     private _http: HttpClient,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router
   ) {}
 }
