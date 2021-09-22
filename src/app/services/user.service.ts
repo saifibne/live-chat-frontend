@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { SearchUser, UserInterface } from '../model/user.model';
 import { BehaviorSubject, of, Subject } from 'rxjs';
-import { exhaustMap, tap } from 'rxjs/operators';
+import { exhaustMap, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { io, Socket } from 'socket.io-client';
 
@@ -58,7 +58,22 @@ export class UserService {
     if (this.socket) {
       this.socket.disconnect();
     }
-    return this.router.navigate(['/log-in']);
+    return this.userToken.pipe(
+      switchMap((result) => {
+        if (result) {
+          return this.http.get<{ message: string; code: number }>(
+            `${environment.host}/log-out`,
+            {
+              headers: new HttpHeaders({
+                Authorization: `Bearer ${result.token}`,
+              }),
+            }
+          );
+        } else {
+          return of(null);
+        }
+      })
+    );
   }
   autoLogin() {
     const token = localStorage.getItem('token');

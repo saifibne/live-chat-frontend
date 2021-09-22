@@ -85,7 +85,6 @@ export class UserStoreEffect {
                 })
                 .pipe(
                   map((userData) => {
-                    console.log(userData);
                     return userActions.persistUserData({
                       name: userData.name,
                       pictureUrl: userData.pictureUrl,

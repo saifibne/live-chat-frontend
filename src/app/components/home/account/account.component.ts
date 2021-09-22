@@ -15,6 +15,8 @@ import { UserService } from '../../../services/user.service';
 import { UserInterface } from '../../../model/user.model';
 import { AppStateInterface } from '../../../store/store.reducer';
 import * as userActions from '../../../store/userStore/userStore.action';
+import { take } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-account',
@@ -32,7 +34,8 @@ export class AccountComponent implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     private renderer: Renderer2,
-    private store: Store<AppStateInterface>
+    private store: Store<AppStateInterface>,
+    private router: Router
   ) {}
   ngOnInit() {
     // this.userService.showProgressBar.next(true);
@@ -171,7 +174,12 @@ export class AccountComponent implements OnInit, OnDestroy {
       });
   }
   onLogOut() {
-    return this.userService.logOut();
+    this.userService
+      .logOut()
+      .pipe(take(1))
+      .subscribe(() => {
+        this.router.navigate(['/log-in']);
+      });
   }
   ngOnDestroy() {
     this.ownerDetailsSubscription.unsubscribe();
